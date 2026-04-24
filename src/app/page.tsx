@@ -1,63 +1,153 @@
+import Link from "next/link";
 import Image from "next/image";
 
-export default function Home() {
+const POSE_URL = "https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/avatars/2da17cb4-8237-4c7a-8c3e-a6294376259b/Gemini_Generated_Image_hwgh6hwgh6hwgh6h.png";
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-[#0f0a1e] text-white flex flex-col overflow-hidden">
+      {/* Nav */}
+      <nav className="sticky top-0 z-20 bg-[#0f0a1e]/80 backdrop-blur-md border-b border-white/5 px-8 py-4 flex items-center justify-between">
+        <span className="font-display font-bold text-white text-xl tracking-tight">e-cabin</span>
+        <div className="flex gap-3">
+          <Link href="/login" className="px-4 py-2 text-sm font-medium text-white/50 hover:text-white transition">
+            Giriş Yap
+          </Link>
+          <Link href="/signup" className="px-5 py-2 text-sm font-semibold bg-lavender-500 hover:bg-lavender-400 text-white rounded-xl transition">
+            Başla
+          </Link>
+        </div>
+      </nav>
+
+      {/* Glow */}
+      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-lavender-500/15 rounded-full blur-[140px] pointer-events-none" />
+
+      {/* Hero */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-12 relative">
+        {/* Başlık */}
+        <div className="text-center mb-12 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 bg-lavender-500/10 border border-lavender-500/30 text-lavender-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-5 tracking-wide uppercase">
+            <span className="w-1.5 h-1.5 bg-lavender-400 rounded-full animate-pulse" />
+            Yapay Zeka Destekli
+          </div>
+          <h1 className="font-display font-bold text-4xl md:text-6xl leading-tight">
+            Sanal Deneme Kabinine
+            <br />
+            <span className="bg-gradient-to-r from-lavender-300 via-lavender-400 to-purple-400 bg-clip-text text-transparent">
+              Hoşgeldin
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-white/40 mt-4 text-base max-w-md mx-auto">
+            Avatarınla ya da kendi fotoğrafınla istediğin kıyafeti saniyeler içinde dene.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* 3 Panel */}
+        <div className="w-full max-w-5xl grid grid-cols-3 gap-4 items-stretch">
+
+          {/* Sol — Avatar */}
+          <div className="animate-fade-in-up bg-white/5 border border-white/10 rounded-3xl overflow-hidden flex flex-col hover:border-lavender-500/40 transition group" style={{ animationDelay: "100ms" }}>
+            <div className="flex-1 relative overflow-hidden">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-lavender-400/20 blur-2xl rounded-full z-10" />
+              <div className="absolute top-3 left-3 right-3 z-20">
+                <p className="text-xs text-white/30">Dijital avatarın hazır</p>
+                <h3 className="font-display font-bold text-white text-base">Avatarınla Dene</h3>
+              </div>
+              <video
+                src="https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/assets/hero.mp4.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-3 left-3 right-3 z-20">
+                <Link
+                  href="/signup"
+                  className="block text-center py-2.5 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition backdrop-blur-sm"
+                >
+                  Hemen Başla
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Orta — Kabin */}
+          <div className="animate-fade-in-up flex flex-col items-center justify-center text-center gap-6 px-4" style={{ animationDelay: "0ms" }}>
+            <div className="relative">
+              <div className="absolute inset-0 bg-lavender-500/20 blur-3xl rounded-full" />
+              <div className="relative bg-white/5 border border-white/10 rounded-2xl px-6 py-8 flex flex-col items-center gap-4">
+                <div className="w-16 h-16 bg-lavender-500/20 border border-lavender-500/30 rounded-2xl flex items-center justify-center text-3xl">
+                  🪞
+                </div>
+                <div>
+                  <p className="text-lavender-300 text-xs font-semibold uppercase tracking-widest mb-1">e-cabin</p>
+                  <h2 className="font-display font-bold text-white text-xl leading-tight">
+                    Sanal<br />Deneme<br />Kabini
+                  </h2>
+                </div>
+                <div className="w-px h-8 bg-gradient-to-b from-lavender-500/50 to-transparent" />
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {[
+                    { icon: "👗", label: "Elbise" },
+                    { icon: "🧥", label: "Ceket" },
+                    { icon: "👚", label: "Üst" },
+                    { icon: "👟", label: "Ayakkabı" },
+                    { icon: "👜", label: "Aksesuar" },
+                    { icon: "🩱", label: "Etek" },
+                  ].map((cat) => (
+                    <Link
+                      key={cat.label}
+                      href="/signup"
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-white/50 hover:bg-lavender-500/20 hover:border-lavender-500/40 hover:text-lavender-300 transition"
+                    >
+                      <span>{cat.icon}</span>
+                      <span>{cat.label}</span>
+                    </Link>
+                  ))}
+                </div>
+                <p className="text-white/20 text-xs">
+                  Kıyafeti giymeden önce nasıl durduğunu gör
+                </p>
+              </div>
+            </div>
+
+            <Link
+              href="/signup"
+              className="w-full py-3 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition shadow-xl shadow-lavender-900/50"
+            >
+              Ücretsiz Başla ✨
+            </Link>
+            <Link href="/login" className="text-xs text-white/30 hover:text-white/60 transition">
+              Zaten hesabın var mı? Giriş yap
+            </Link>
+          </div>
+
+          {/* Sağ — Fotoğraf Yükle */}
+          <div className="animate-fade-in-up bg-white/5 border border-white/10 rounded-3xl overflow-hidden flex flex-col hover:border-lavender-500/40 transition" style={{ animationDelay: "200ms" }}>
+            <div className="flex-1 relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-purple-400/20 blur-2xl rounded-full" />
+              <div className="absolute top-3 left-3 right-3 z-20">
+                <p className="text-xs text-white/30">Fotoğrafın yeterli</p>
+                <h3 className="font-display font-bold text-white text-base">Resmini Yükle, Dene</h3>
+              </div>
+              <Image
+                src={POSE_URL}
+                alt="Örnek poz"
+                width={400}
+                height={600}
+                className="w-full h-auto object-contain relative z-10 opacity-80"
+              />
+              <div className="absolute bottom-3 left-3 right-3 z-20">
+                <Link
+                  href="/signup"
+                  className="block text-center py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white/70 rounded-xl hover:bg-white/10 hover:text-white transition backdrop-blur-sm"
+                >
+                  Hemen Dene
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>

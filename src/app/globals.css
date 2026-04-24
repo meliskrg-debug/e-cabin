@@ -2,7 +2,31 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@theme {
+  --color-lavender-50: #FAF7FF;
+  --color-lavender-100: #F3ECFF;
+  --color-lavender-200: #E6D7FF;
+  --color-lavender-300: #D1B8FF;
+  --color-lavender-400: #B794F4;
+  --color-lavender-500: #9F7AEA;
+  --color-lavender-600: #805AD5;
+  --color-lavender-700: #6B46C1;
+  --color-lavender-800: #553C9A;
+  --color-lavender-900: #44337A;
+  --color-cream: #FDFCFF;
+  --font-display: "Plus Jakarta Sans", Inter, sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out both;
+}
 
 @theme inline {
   --color-background: var(--background);
