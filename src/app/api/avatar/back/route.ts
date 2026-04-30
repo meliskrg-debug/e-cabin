@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateImage } from "@/lib/nanobanana";
 import { AVATAR_BACK_PROMPT } from "@/lib/prompts";
 
-export const maxDuration = 600;
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();

@@ -30,6 +30,8 @@ export default function SellerGarmentsPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<string | null>(null);
 
   // Form state
   const [name, setName] = useState("");
@@ -80,6 +82,24 @@ export default function SellerGarmentsPage() {
       body: JSON.stringify({ id }),
     });
     load();
+  }
+
+  async function handleShopifyImport() {
+    setImporting(true);
+    setImportResult(null);
+    const res = await fetch("/api/seller/shopify/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ shopifyDomain: "touchmeluxury.com" }),
+    });
+    const data = await res.json();
+    setImporting(false);
+    if (res.ok) {
+      setImportResult(`${data.imported} ürün aktarıldı${data.skipped ? `, ${data.skipped} atlandı` : ""}.`);
+      load();
+    } else {
+      setImportResult("Hata: " + (data.error || "Bilinmeyen hata"));
+    }
   }
 
   async function handleToggle(id: string, current: boolean) {
@@ -167,11 +187,22 @@ export default function SellerGarmentsPage() {
       <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-12 relative">
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-display font-bold text-3xl text-white">Ürün Kataloğu</h1>
-          <button onClick={() => setShowModal(true)}
-            className="px-5 py-2.5 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition">
-            + Ürün Ekle
-          </button>
+          <div className="flex gap-3">
+            <button onClick={handleShopifyImport} disabled={importing}
+              className="px-5 py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white/70 rounded-xl hover:bg-white/10 hover:text-white transition disabled:opacity-40 flex items-center gap-2">
+              {importing ? "Aktarılıyor..." : "🛍️ Shopify'dan Aktar"}
+            </button>
+            <button onClick={() => setShowModal(true)}
+              className="px-5 py-2.5 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition">
+              + Ürün Ekle
+            </button>
+          </div>
         </div>
+        {importResult && (
+          <div className="mb-4 px-4 py-3 rounded-xl text-sm bg-lavender-500/10 border border-lavender-500/20 text-lavender-300">
+            {importResult}
+          </div>
+        )}
 
         {loading ? (
           <div className="text-center py-20 text-white/30">Yükleniyor...</div>
