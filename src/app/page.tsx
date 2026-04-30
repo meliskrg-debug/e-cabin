@@ -10,10 +10,7 @@ export default function LandingPage() {
       <nav className="sticky top-0 z-20 bg-[#0f0a1e]/80 backdrop-blur-md border-b border-white/5 px-8 py-4 flex items-center justify-between">
         <span className="font-display font-bold text-white text-xl tracking-tight">e-cabin</span>
         <div className="flex gap-3">
-          <Link href="/login" className="px-4 py-2 text-sm font-medium text-white/50 hover:text-white transition">
-            Giriş Yap
-          </Link>
-          <Link href="/signup" className="px-5 py-2 text-sm font-semibold bg-lavender-500 hover:bg-lavender-400 text-white rounded-xl transition">
+          <Link href="/tryon" className="px-5 py-2 text-sm font-semibold bg-lavender-500 hover:bg-lavender-400 text-white rounded-xl transition">
             Başla
           </Link>
         </div>
@@ -63,7 +60,7 @@ export default function LandingPage() {
               />
               <div className="absolute bottom-3 left-3 right-3 z-20">
                 <Link
-                  href="/signup"
+                  href="/tryon"
                   className="block text-center py-2.5 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition backdrop-blur-sm"
                 >
                   Hemen Başla
@@ -98,7 +95,7 @@ export default function LandingPage() {
                   ].map((cat) => (
                     <Link
                       key={cat.label}
-                      href="/signup"
+                      href="/tryon"
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-xs text-white/50 hover:bg-lavender-500/20 hover:border-lavender-500/40 hover:text-lavender-300 transition"
                     >
                       <span>{cat.icon}</span>
@@ -113,12 +110,12 @@ export default function LandingPage() {
             </div>
 
             <Link
-              href="/signup"
+              href="/tryon"
               className="w-full py-3 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition shadow-xl shadow-lavender-900/50"
             >
               Ücretsiz Başla ✨
             </Link>
-            <Link href="/login" className="text-xs text-white/30 hover:text-white/60 transition">
+            <Link href="/tryon" className="text-xs text-white/30 hover:text-white/60 transition">
               Zaten hesabın var mı? Giriş yap
             </Link>
           </div>
@@ -140,7 +137,7 @@ export default function LandingPage() {
               />
               <div className="absolute bottom-3 left-3 right-3 z-20">
                 <Link
-                  href="/signup"
+                  href="/tryon"
                   className="block text-center py-2.5 text-sm font-semibold bg-white/5 border border-white/10 text-white/70 rounded-xl hover:bg-white/10 hover:text-white transition backdrop-blur-sm"
                 >
                   Hemen Dene

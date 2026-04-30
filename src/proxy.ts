@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/seller/login", "/seller/register"];
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/seller/login", "/seller/register", "/tryon", "/api/public"];
 const SELLER_PATHS = ["/seller/dashboard", "/seller/garments", "/seller/embed"];
 
 export async function proxy(request: NextRequest) {
