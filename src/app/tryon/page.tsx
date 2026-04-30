@@ -30,14 +30,16 @@ function TryonPageInner() {
   );
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
-    fetch("/api/photos").then((r) => r.json()).then((d) => setSavedPhotos(d.photos || []));
-    fetch("/api/wardrobe").then((r) => r.json()).then((d) => setWardrobeItems(d.items || []));
+    fetch("/api/photos").then((r) => r.json()).then((d) => setSavedPhotos(d.photos || [])).catch(() => {});
+    fetch("/api/wardrobe").then((r) => r.json()).then((d) => setWardrobeItems(d.items || [])).catch(() => {});
     fetch("/api/profile").then((r) => r.json()).then((d) => {
+      if (d.error === "unauthorized" || !d.user) { setIsGuest(true); setSourceType("gallery"); return; }
       const active = d.avatars?.find((a: any) => a.is_active);
       if (active) setAvatarUrl(active.avatar_url);
-    });
+    }).catch(() => { setIsGuest(true); setSourceType("gallery"); });
     // If brand garment ID provided, fetch its image URL
     if (preloadedGarmentId) {
       fetch(`/api/public/garment/${preloadedGarmentId}`)
@@ -133,20 +135,22 @@ function TryonPageInner() {
           {/* Source */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5">
             <h2 className="font-display font-bold text-white text-lg">Kaynak Seç</h2>
-            <div className="flex gap-3">
-              {(["avatar", "gallery"] as const).map((t) => (
-                <button key={t}
-                  onClick={() => { setSourceType(t); setSelectedPhotoUrl(null); setGalleryImage(null); }}
-                  className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition ${
-                    sourceType === t
-                      ? "bg-gradient-to-r from-lavender-500 to-purple-500 text-white"
-                      : "bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {t === "avatar" ? "Avatarım" : "Fotoğraf"}
-                </button>
-              ))}
-            </div>
+            {!isGuest && (
+              <div className="flex gap-3">
+                {(["avatar", "gallery"] as const).map((t) => (
+                  <button key={t}
+                    onClick={() => { setSourceType(t); setSelectedPhotoUrl(null); setGalleryImage(null); }}
+                    className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition ${
+                      sourceType === t
+                        ? "bg-gradient-to-r from-lavender-500 to-purple-500 text-white"
+                        : "bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {t === "avatar" ? "Avatarım" : "Fotoğraf"}
+                  </button>
+                ))}
+              </div>
+            )}
             {sourceType === "avatar" ? (
               <div className="flex flex-col items-center gap-2">
                 {avatarUrl ? (

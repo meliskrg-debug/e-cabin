@@ -7,10 +7,7 @@ export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const { data: { user } } = await supabase.auth.getUser();
 
   const form = await req.formData();
   const sourceType = form.get("sourceType") as "avatar" | "gallery";
@@ -20,10 +17,12 @@ export async function POST(req: NextRequest) {
   if (!garment && !garmentUrl) return NextResponse.json({ error: "Kıyafet fotoğrafı eksik" }, { status: 400 });
 
   let sourceRef: { mimeType: string; data: string };
-  let sourceImageUrl: string;
+  let sourceImageUrl = "";
   let avatarId: string | null = null;
 
   if (sourceType === "avatar") {
+    if (!user) return NextResponse.json({ error: "Avatar için giriş gerekli" }, { status: 401 });
+
     const { data: active } = await supabase
       .from("avatars")
       .select("*")
@@ -31,14 +30,10 @@ export async function POST(req: NextRequest) {
       .eq("is_active", true)
       .single();
 
-    if (!active) return NextResponse.json({ error: "Aktif avatar bulunamadı. Önce /onboarding sayfasından avatar oluştur." }, { status: 400 });
+    if (!active) return NextResponse.json({ error: "Aktif avatar bulunamadı." }, { status: 400 });
 
-    console.log("Fetching avatar:", active.avatar_url);
     const res = await fetch(active.avatar_url);
-    if (!res.ok) {
-      console.error("Avatar fetch failed:", res.status, res.statusText);
-      return NextResponse.json({ error: "Avatar görseli yüklenemedi." }, { status: 500 });
-    }
+    if (!res.ok) return NextResponse.json({ error: "Avatar görseli yüklenemedi." }, { status: 500 });
     const buf = Buffer.from(await res.arrayBuffer());
     sourceRef = { mimeType: "image/png", data: buf.toString("base64") };
     sourceImageUrl = active.avatar_url;
@@ -48,7 +43,6 @@ export async function POST(req: NextRequest) {
     const galleryFile = form.get("galleryImage") as File | null;
 
     if (galleryImageUrl) {
-      // Use already-saved photo URL
       const res = await fetch(galleryImageUrl);
       const buf = Buffer.from(await res.arrayBuffer());
       const contentType = res.headers.get("content-type") || "image/jpeg";
@@ -57,49 +51,56 @@ export async function POST(req: NextRequest) {
     } else if (galleryFile) {
       const buf = Buffer.from(await galleryFile.arrayBuffer());
       sourceRef = { mimeType: galleryFile.type, data: buf.toString("base64") };
-      const gpath = `${user.id}/src-${Date.now()}.jpg`;
-      await supabase.storage.from("user-uploads").upload(gpath, buf, { contentType: galleryFile.type });
-      const { data: { publicUrl } } = supabase.storage.from("user-uploads").getPublicUrl(gpath);
-      sourceImageUrl = publicUrl;
-      // Auto-save to photos library
-      await supabase.from("photos").insert({ user_id: user.id, photo_url: publicUrl });
+      if (user) {
+        const gpath = `${user.id}/src-${Date.now()}.jpg`;
+        await supabase.storage.from("user-uploads").upload(gpath, buf, { contentType: galleryFile.type });
+        const { data: { publicUrl } } = supabase.storage.from("user-uploads").getPublicUrl(gpath);
+        sourceImageUrl = publicUrl;
+        await supabase.from("photos").insert({ user_id: user.id, photo_url: publicUrl });
+      }
     } else {
-      return NextResponse.json({ error: "Galeri fotoğrafı eksik" }, { status: 400 });
+      return NextResponse.json({ error: "Fotoğraf eksik" }, { status: 400 });
     }
   }
 
   let garmentRef: { mimeType: string; data: string };
-  let finalGarmentUrl: string;
+  let finalGarmentUrl = garmentUrl || "";
 
   if (garment) {
     const garmentBuf = Buffer.from(await garment.arrayBuffer());
     garmentRef = { mimeType: garment.type, data: garmentBuf.toString("base64") };
-    const gpath = `${user.id}/garment-${Date.now()}.png`;
-    await supabase.storage.from("user-uploads").upload(gpath, garmentBuf, { contentType: garment.type });
-    const { data: { publicUrl } } = supabase.storage.from("user-uploads").getPublicUrl(gpath);
-    finalGarmentUrl = publicUrl;
-  } else {
-    console.log("Fetching garment URL:", garmentUrl);
-    const res = await fetch(garmentUrl!);
-    if (!res.ok) {
-      console.error("Garment fetch failed:", res.status, res.statusText);
-      return NextResponse.json({ error: "Kıyafet görseli yüklenemedi." }, { status: 500 });
+    if (user) {
+      const gpath = `${user.id}/garment-${Date.now()}.png`;
+      await supabase.storage.from("user-uploads").upload(gpath, garmentBuf, { contentType: garment.type });
+      const { data: { publicUrl } } = supabase.storage.from("user-uploads").getPublicUrl(gpath);
+      finalGarmentUrl = publicUrl;
     }
+  } else {
+    const res = await fetch(garmentUrl!);
+    if (!res.ok) return NextResponse.json({ error: "Kıyafet görseli yüklenemedi." }, { status: 500 });
     const buf = Buffer.from(await res.arrayBuffer());
     const contentType = res.headers.get("content-type") || "image/jpeg";
     garmentRef = { mimeType: contentType, data: buf.toString("base64") };
-    finalGarmentUrl = garmentUrl!;
   }
 
   let result: { mimeType: string; data: string };
   try {
     result = await generateImage({
       prompt: TRYON_SYSTEM_PROMPT(),
-      referenceImages: [sourceRef, garmentRef],
+      referenceImages: [sourceRef!, garmentRef],
     });
   } catch (err) {
     console.error("Gemini error:", err);
     return NextResponse.json({ error: "Görsel üretilemedi." }, { status: 500 });
+  }
+
+  // Guest: return base64 directly without saving
+  if (!user) {
+    return NextResponse.json({
+      tryon: {
+        result_image_url: `data:${result.mimeType};base64,${result.data}`,
+      },
+    });
   }
 
   const rpath = `${user.id}/tryon-${Date.now()}.png`;
@@ -108,7 +109,6 @@ export async function POST(req: NextRequest) {
     .upload(rpath, Buffer.from(result.data, "base64"), { contentType: result.mimeType });
 
   if (uploadErr) {
-    console.error("Storage upload error:", uploadErr);
     return NextResponse.json({ error: "Sonuç yüklenemedi: " + uploadErr.message }, { status: 500 });
   }
 
@@ -128,8 +128,6 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (insertErr) {
-    console.error("DB insert error:", insertErr);
-    // Still return the result URL even if DB insert fails
     return NextResponse.json({ tryon: { result_image_url: resultUrl } });
   }
 
