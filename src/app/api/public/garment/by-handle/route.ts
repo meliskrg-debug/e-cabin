@@ -1,17 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const TR_MAP: Record<string, string> = {
+  "ı": "i", // ı
+  "İ": "i", // İ
+  "ğ": "g", // ğ
+  "Ğ": "g", // Ğ
+  "ş": "s", // ş
+  "Ş": "s", // Ş
+  "ö": "o", // ö
+  "Ö": "o", // Ö
+  "ü": "u", // ü
+  "Ü": "u", // Ü
+  "ç": "c", // ç
+  "Ç": "c", // Ç
+  "̇": "",  // combining dot above (i̇)
+};
+
 function normalizeHandle(handle: string): string {
   return handle
-    .replace(/ı/g, "i") // ı → i (dotless i)
-    .replace(/İ/g, "i") // İ → i (I with dot)
-    .replace(/ğ/g, "g") // ğ → g
-    .replace(/ş/g, "s") // ş → s
-    .replace(/ö/g, "o") // ö → o
-    .replace(/ü/g, "u") // ü → u
-    .replace(/ç/g, "c") // ç → c
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "") // strip combining diacritics (including dotted i)
+    .split("")
+    .map((ch) => {
+      if (ch in TR_MAP) return TR_MAP[ch];
+      const code = ch.codePointAt(0) ?? 0;
+      // strip combining diacritical marks (U+0300–U+036F)
+      if (code >= 0x0300 && code <= 0x036f) return "";
+      return ch;
+    })
+    .join("")
     .toLowerCase();
 }
 
@@ -37,11 +54,11 @@ export async function GET(req: NextRequest) {
   }
 
   const normalizedInput = normalizeHandle(handle);
-  console.log("Looking for handle:", handle, "→ normalized:", normalizedInput);
+  console.log("Input handle:", handle, "→", normalizedInput);
 
-  const garment = garments.find(g => {
+  const garment = garments.find((g) => {
     const norm = normalizeHandle(g.shopify_handle || "");
-    console.log("DB handle:", g.shopify_handle, "→ normalized:", norm, "| match:", norm === normalizedInput);
+    console.log("DB:", g.shopify_handle, "→", norm, norm === normalizedInput ? "MATCH" : "");
     return norm === normalizedInput;
   });
 
