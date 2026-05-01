@@ -3,10 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 
 function normalizeHandle(handle: string): string {
   return handle
+    .replace(/ı/g, "i") // ı → i (dotless i)
+    .replace(/İ/g, "i") // İ → i (I with dot)
+    .replace(/ğ/g, "g") // ğ → g
+    .replace(/ş/g, "s") // ş → s
+    .replace(/ö/g, "o") // ö → o
+    .replace(/ü/g, "u") // ü → u
+    .replace(/ç/g, "c") // ç → c
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/ı/g, "i")
-    .replace(/İ/g, "i")
+    .replace(/[̀-ͯ]/g, "") // strip combining diacritics (including dotted i)
     .toLowerCase();
 }
 
@@ -32,11 +37,13 @@ export async function GET(req: NextRequest) {
   }
 
   const normalizedInput = normalizeHandle(handle);
-  const garment = garments.find(g => normalizeHandle(g.shopify_handle || "") === normalizedInput);
+  console.log("Looking for handle:", handle, "→ normalized:", normalizedInput);
 
-  if (!garment) {
-    return NextResponse.json({ garment: null });
-  }
+  const garment = garments.find(g => {
+    const norm = normalizeHandle(g.shopify_handle || "");
+    console.log("DB handle:", g.shopify_handle, "→ normalized:", norm, "| match:", norm === normalizedInput);
+    return norm === normalizedInput;
+  });
 
-  return NextResponse.json({ garment });
+  return NextResponse.json({ garment: garment || null });
 }
