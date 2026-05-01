@@ -20,12 +20,16 @@ function EmbedPageInner() {
   const [garments, setGarments] = useState<Garment[]>([]);
   const [selectedId, setSelectedId] = useState<string>(preselectedId || "");
   const [copied, setCopied] = useState(false);
+  const [copiedGlobal, setCopiedGlobal] = useState(false);
+  const [shopifyDomain, setShopifyDomain] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/seller/garments").then(r => r.json()).then(d => {
       const list = d.garments || [];
       setGarments(list);
       if (!preselectedId && list.length > 0) setSelectedId(list[0].id);
+      const withDomain = list.find((g: any) => g.shopify_domain);
+      if (withDomain) setShopifyDomain(withDomain.shopify_domain);
     });
   }, [preselectedId]);
 
@@ -46,6 +50,16 @@ function EmbedPageInner() {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  async function copyGlobal(text: string) {
+    await navigator.clipboard.writeText(text);
+    setCopiedGlobal(true);
+    setTimeout(() => setCopiedGlobal(false), 2000);
+  }
+
+  const globalScript = shopifyDomain
+    ? `<script src="${baseUrl}/widget.js" data-ecabin-shop="${shopifyDomain}"></script>`
+    : null;
+
   return (
     <div className="min-h-screen bg-[#0f0a1e] flex flex-col">
       <nav className="sticky top-0 z-10 bg-[#0f0a1e]/80 backdrop-blur-md border-b border-white/5 px-6 py-4 flex items-center justify-between">
@@ -64,6 +78,50 @@ function EmbedPageInner() {
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-12 relative">
         <h1 className="font-display font-bold text-3xl text-white mb-2">Embed Kodu</h1>
         <p className="text-white/40 text-sm mb-8">Ürün sayfana ekleyeceğin butonu kopyala.</p>
+
+        {/* Global Shopify Entegrasyonu */}
+        {shopifyDomain && (
+          <div className="mb-8 bg-gradient-to-br from-lavender-500/10 to-purple-500/10 border border-lavender-500/30 rounded-3xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 bg-green-500/20 border border-green-500/30 rounded-full flex items-center justify-center text-green-400 text-sm font-bold">✓</div>
+              <div>
+                <h2 className="font-semibold text-white">Shopify Global Entegrasyon</h2>
+                <p className="text-xs text-white/40">{shopifyDomain} — {garments.filter(g => g.is_active).length} aktif ürün</p>
+              </div>
+            </div>
+            <p className="text-sm text-white/60 mb-4">
+              Aşağıdaki kodu Shopify temanın <code className="text-lavender-300 bg-lavender-500/10 px-1.5 py-0.5 rounded">theme.liquid</code> dosyasına, <code className="text-lavender-300 bg-lavender-500/10 px-1.5 py-0.5 rounded">&lt;/body&gt;</code> etiketinden önce yapıştır.
+              Tüm ürün sayfalarında otomatik "e-cabin ile dene" butonu çıkar.
+            </p>
+            <div className="bg-black/40 rounded-xl p-4 font-mono text-xs text-lavender-300 mb-3 overflow-x-auto">
+              {globalScript}
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-white/30">Bir kez ekle, tüm ürünlerde çalışır.</p>
+              <button onClick={() => copyGlobal(globalScript!)}
+                className="px-4 py-2 text-xs font-semibold bg-lavender-500 hover:bg-lavender-400 text-white rounded-xl transition">
+                {copiedGlobal ? "Kopyalandı ✓" : "Kodu Kopyala"}
+              </button>
+            </div>
+
+            <div className="mt-5 pt-5 border-t border-white/10 grid grid-cols-4 gap-3">
+              {[
+                { n: "1", t: "Shopify Admin", d: "Online Store → Themes" },
+                { n: "2", t: "Edit Code", d: "Aktif temanın yanındaki butona tıkla" },
+                { n: "3", t: "theme.liquid", d: "Layout klasöründe bul" },
+                { n: "4", t: "Yapıştır", d: "</body> etiketinden hemen önce" },
+              ].map(s => (
+                <div key={s.n} className="flex gap-2">
+                  <div className="w-5 h-5 rounded-full bg-lavender-500/20 border border-lavender-500/30 text-lavender-400 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{s.n}</div>
+                  <div>
+                    <p className="text-xs font-semibold text-white">{s.t}</p>
+                    <p className="text-xs text-white/30">{s.d}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Ürün seçimi */}
