@@ -35,10 +35,12 @@ function TryonPageInner() {
   useEffect(() => {
     fetch("/api/photos").then((r) => r.json()).then((d) => setSavedPhotos(d.photos || [])).catch(() => {});
     fetch("/api/wardrobe").then((r) => r.json()).then((d) => setWardrobeItems(d.items || [])).catch(() => {});
-    fetch("/api/profile").then((r) => r.json()).then((d) => {
-      if (d.error === "unauthorized" || !d.user) { setIsGuest(true); setSourceType("gallery"); return; }
-      const active = d.avatars?.find((a: any) => a.is_active);
-      if (active) setAvatarUrl(active.avatar_url);
+    fetch("/api/profile").then((r) => {
+      if (r.status === 401) { setIsGuest(true); setSourceType("gallery"); return r.json(); }
+      return r.json().then((d) => {
+        const active = d.avatars?.find((a: any) => a.is_active);
+        if (active) setAvatarUrl(active.avatar_url);
+      });
     }).catch(() => { setIsGuest(true); setSourceType("gallery"); });
     // If brand garment ID provided, fetch its image URL
     if (preloadedGarmentId) {
