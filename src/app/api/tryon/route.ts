@@ -23,12 +23,16 @@ export async function POST(req: NextRequest) {
   if (sourceType === "avatar") {
     if (!user) return NextResponse.json({ error: "Avatar için giriş gerekli" }, { status: 401 });
 
-    const { data: active } = await supabase
+    const selectedAvatarId = form.get("avatarId") as string | null;
+    const { data: avatars } = await supabase
       .from("avatars")
       .select("*")
       .eq("user_id", user.id)
-      .eq("is_active", true)
-      .single();
+      .eq("is_active", true);
+
+    const active = selectedAvatarId
+      ? avatars?.find(a => a.id === selectedAvatarId)
+      : avatars?.find(a => a.pose === "front") || avatars?.[0];
 
     if (!active) return NextResponse.json({ error: "Aktif avatar bulunamadı." }, { status: 400 });
 

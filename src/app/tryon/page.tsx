@@ -74,6 +74,8 @@ function TryonPageInner() {
     try {
       const formData = new FormData();
       formData.append("sourceType", sourceType);
+      const selectedPoseAvatar = allPoses.find(p => (p.pose || "front") === selectedPose);
+      if (selectedPoseAvatar) formData.append("avatarId", selectedPoseAvatar.id);
 
       if (garment) formData.append("garment", garment);
       else if (selectedGarmentUrl) formData.append("garmentUrl", selectedGarmentUrl);
