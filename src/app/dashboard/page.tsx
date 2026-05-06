@@ -2,13 +2,28 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/nav";
+import PoseGenerator from "@/components/pose-generator";
+
+const POSE_LABELS: Record<string, string> = {
+  front: "Önden",
+  hands_on_hips_1: "Eli Belinde",
+  hands_on_hips_2: "Doğal Poz",
+};
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: avatar } = await supabase
-    .from("avatars").select("*").eq("user_id", user!.id).eq("is_active", true).single();
+  const { data: avatars } = await supabase
+    .from("avatars")
+    .select("*")
+    .eq("user_id", user!.id)
+    .eq("is_active", true)
+    .order("created_at", { ascending: true });
+
+  const frontAvatar = avatars?.find(a => a.pose === "front") || avatars?.[0] || null;
+  const poseAvatars = avatars?.filter(a => a.pose && a.pose !== "front") || [];
+  const hasPoses = poseAvatars.length > 0;
 
   const { count: tryonCount } = await supabase
     .from("tryons").select("*", { count: "exact", head: true }).eq("user_id", user!.id);
@@ -17,7 +32,6 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-[#0f0a1e] flex flex-col">
       <Nav />
 
-      {/* Glow */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-lavender-500/10 rounded-full blur-[140px] pointer-events-none" />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-12 relative">
@@ -27,35 +41,51 @@ export default async function DashboardPage() {
           {/* Avatar Card */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-4">
             <h2 className="font-display font-bold text-white text-lg">Dijital Avatarın</h2>
-            {avatar ? (
+            {frontAvatar ? (
               <>
-                <div className="grid grid-cols-2 gap-3">
+                <div className={`grid gap-3 ${hasPoses ? "grid-cols-3" : "grid-cols-2"}`}>
+                  {/* Front pose */}
                   <div>
                     <p className="text-xs text-white/30 text-center mb-1">Önden</p>
                     <div className="rounded-2xl overflow-hidden bg-white/5">
-                      <Image src={avatar.avatar_url} alt="Avatar önden" width={300} height={450} className="w-full h-auto object-contain" />
+                      <Image src={frontAvatar.avatar_url} alt="Avatar önden" width={200} height={300} className="w-full h-auto object-contain" />
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs text-white/30 text-center mb-1">Arkadan</p>
-                    {avatar.avatar_back_url ? (
-                      <div className="rounded-2xl overflow-hidden bg-white/5">
-                        <Image src={avatar.avatar_back_url} alt="Avatar arkadan" width={300} height={450} className="w-full h-auto object-contain" />
+
+                  {hasPoses ? (
+                    poseAvatars.slice(0, 2).map(a => (
+                      <div key={a.id}>
+                        <p className="text-xs text-white/30 text-center mb-1">{POSE_LABELS[a.pose] || "Poz"}</p>
+                        <div className="rounded-2xl overflow-hidden bg-white/5">
+                          <Image src={a.avatar_url} alt={a.pose} width={200} height={300} className="w-full h-auto object-contain" />
+                        </div>
                       </div>
-                    ) : (
-                      <div className="rounded-2xl bg-white/5 border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 text-white/20 aspect-[2/3]">
-                        <span className="text-2xl">🔄</span>
-                        <a href="/profile" className="text-xs text-lavender-400 hover:text-lavender-300">Oluştur →</a>
-                      </div>
-                    )}
-                  </div>
+                    ))
+                  ) : (
+                    <div>
+                      <p className="text-xs text-white/30 text-center mb-1">Arkadan</p>
+                      {frontAvatar.avatar_back_url ? (
+                        <div className="rounded-2xl overflow-hidden bg-white/5">
+                          <Image src={frontAvatar.avatar_back_url} alt="Avatar arkadan" width={200} height={300} className="w-full h-auto object-contain" />
+                        </div>
+                      ) : (
+                        <div className="rounded-2xl bg-white/5 border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 text-white/20 aspect-[2/3]">
+                          <span className="text-2xl">🔄</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <Link
-                  href="/onboarding"
-                  className="text-center py-2.5 text-sm font-medium bg-white/5 border border-white/10 text-white/60 rounded-xl hover:bg-white/10 hover:text-white transition"
-                >
-                  Avatarı Yenile
-                </Link>
+
+                <div className="flex flex-col gap-2">
+                  {!hasPoses && <PoseGenerator />}
+                  <Link
+                    href="/onboarding"
+                    className="text-center py-2.5 text-sm font-medium bg-white/5 border border-white/10 text-white/60 rounded-xl hover:bg-white/10 hover:text-white transition"
+                  >
+                    Avatarı Yenile
+                  </Link>
+                </div>
               </>
             ) : (
               <>

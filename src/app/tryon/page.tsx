@@ -8,6 +8,13 @@ import ImageUploader from "@/components/image-uploader";
 
 type Photo = { id: string; photo_url: string; label: string | null };
 type WardrobeItem = { id: string; item_url: string; name: string | null };
+type AvatarPose = { id: string; avatar_url: string; pose: string | null };
+
+const POSE_LABELS: Record<string, string> = {
+  front: "Önden",
+  hands_on_hips_1: "Eli Belinde",
+  hands_on_hips_2: "Doğal Poz",
+};
 
 function TryonPageInner() {
   const searchParams = useSearchParams();
@@ -30,6 +37,8 @@ function TryonPageInner() {
   );
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [allPoses, setAllPoses] = useState<AvatarPose[]>([]);
+  const [selectedPose, setSelectedPose] = useState<string>("front");
   const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
@@ -38,8 +47,10 @@ function TryonPageInner() {
     fetch("/api/profile").then((r) => {
       if (r.status === 401) { setIsGuest(true); setSourceType("gallery"); return r.json(); }
       return r.json().then((d) => {
-        const active = d.avatars?.find((a: any) => a.is_active);
-        if (active) setAvatarUrl(active.avatar_url);
+        const activeAvatars: AvatarPose[] = d.avatars?.filter((a: any) => a.is_active) || [];
+        setAllPoses(activeAvatars);
+        const front = activeAvatars.find(a => a.pose === "front") || activeAvatars[0];
+        if (front) setAvatarUrl(front.avatar_url);
       });
     }).catch(() => { setIsGuest(true); setSourceType("gallery"); });
     // If brand garment ID provided, fetch its image URL
@@ -154,7 +165,18 @@ function TryonPageInner() {
               </div>
             )}
             {sourceType === "avatar" ? (
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col gap-3">
+                {allPoses.length > 1 && (
+                  <div className="flex gap-2">
+                    {allPoses.map(p => (
+                      <button key={p.id}
+                        onClick={() => { setSelectedPose(p.pose || "front"); setAvatarUrl(p.avatar_url); }}
+                        className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${selectedPose === (p.pose || "front") ? "bg-lavender-500/30 text-lavender-300 border border-lavender-500/40" : "bg-white/5 text-white/40 hover:text-white"}`}>
+                        {POSE_LABELS[p.pose || "front"] || "Poz"}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {avatarUrl ? (
                   <div className="rounded-2xl overflow-hidden bg-white/5 w-full">
                     <Image src={avatarUrl} alt="Avatarım" width={400} height={600} className="w-full h-auto object-contain" />

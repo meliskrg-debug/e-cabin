@@ -61,6 +61,29 @@ export const AVATAR_BACK_PROMPT = () =>
 
 Single photorealistic image, no text, no watermarks.`;
 
+export const AVATAR_POSE_PROMPT = (pose: "hands_on_hips_1" | "hands_on_hips_2") =>
+  pose === "hands_on_hips_1"
+    ? `Generate a new pose variant of this person's full-body avatar. Use the provided front-view avatar as reference.
+
+- EXACT same person: same face, hair, skin tone, body proportions
+- Same outfit: black sports bra + black bike shorts
+- NEW POSE: both hands on hips, confident model stance, fully front-facing camera, weight evenly distributed
+- Framing: full body, head to feet, both feet visible, no cropping
+- Background: white (#FFFFFF)
+- Lighting: soft studio light
+
+Single photorealistic image, no text, no watermarks.`
+    : `Generate a new pose variant of this person's full-body avatar. Use the provided front-view avatar as reference.
+
+- EXACT same person: same face, hair, skin tone, body proportions
+- Same outfit: black sports bra + black bike shorts
+- NEW POSE: one hand on hip, slight weight shift to one leg, natural relaxed model pose, front-facing camera
+- Framing: full body, head to feet, both feet visible, no cropping
+- Background: white (#FFFFFF)
+- Lighting: soft studio light
+
+Single photorealistic image, no text, no watermarks.`;
+
 export const TRYON_SYSTEM_PROMPT = () =>
   `Virtual try-on. Two input images: 1) person, 2) garment.
 
