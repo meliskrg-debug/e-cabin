@@ -14,6 +14,35 @@ async function compressImage(base64: string): Promise<{ data: string; mimeType: 
   return { data: compressed.toString("base64"), mimeType: "image/jpeg" };
 }
 
+async function callGemini(parts: { inlineData?: { mimeType: string; data: string }; text?: string }[]): Promise<{ mimeType: string; data: string }> {
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: [{ role: "user", parts }],
+    config: {
+      responseModalities: ["IMAGE", "TEXT"],
+    },
+  });
+
+  const candidates = response.candidates || [];
+  console.log("Gemini candidates:", candidates.length, "finishReasons:", candidates.map(c => c.finishReason));
+
+  let textResponse = "";
+  for (const cand of candidates) {
+    for (const part of cand.content?.parts || []) {
+      if (part.text) textResponse += part.text;
+      if (part.inlineData?.data) {
+        return {
+          mimeType: part.inlineData.mimeType || "image/png",
+          data: part.inlineData.data,
+        };
+      }
+    }
+  }
+
+  const reason = candidates[0]?.finishReason || "UNKNOWN";
+  throw new Error(`No image from Gemini. finishReason=${reason}. text=${textResponse.slice(0, 200)}`);
+}
+
 export async function generateImage({
   prompt,
   referenceImages,
@@ -21,7 +50,6 @@ export async function generateImage({
   prompt: string;
   referenceImages: { mimeType: string; data: string }[];
 }): Promise<{ mimeType: string; data: string }> {
-  // Compress all reference images before sending
   const compressed = await Promise.all(
     referenceImages.map((img) => compressImage(img.data))
   );
@@ -33,30 +61,18 @@ export async function generateImage({
     { text: prompt },
   ];
 
-  const response = await ai.models.generateContent({
-    model: MODEL,
-    contents: [{ role: "user", parts }],
-    config: {
-      responseModalities: ["IMAGE", "TEXT"],
-    },
-  });
-
-  const candidates = response.candidates || [];
-  console.log("Gemini candidates count:", candidates.length);
-  for (const cand of candidates) {
-    console.log("Candidate finishReason:", cand.finishReason);
-    const parts = cand.content?.parts || [];
-    console.log("Parts count:", parts.length);
-    for (const part of parts) {
-      if (part.text) console.log("Text part:", part.text.slice(0, 200));
-      if (part.inlineData?.data) {
-        return {
-          mimeType: part.inlineData.mimeType || "image/png",
-          data: part.inlineData.data,
-        };
-      }
+  // Try up to 3 times — model occasionally returns no image on first attempt
+  let lastError: Error = new Error("Unknown error");
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      console.log(`Gemini attempt ${attempt}/3`);
+      return await callGemini(parts);
+    } catch (err) {
+      lastError = err as Error;
+      console.error(`Gemini attempt ${attempt} failed:`, lastError.message);
+      if (attempt < 3) await new Promise(r => setTimeout(r, 2000 * attempt));
     }
   }
-  console.log("Full response:", JSON.stringify(response).slice(0, 500));
-  throw new Error("Nano Banana 2 returned no image.");
+
+  throw lastError;
 }

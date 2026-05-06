@@ -94,8 +94,9 @@ export async function POST(req: NextRequest) {
       referenceImages: [sourceRef!, garmentRef],
     });
   } catch (err) {
-    console.error("Gemini error:", err);
-    return NextResponse.json({ error: "Görsel üretilemedi." }, { status: 500 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Gemini error:", msg);
+    return NextResponse.json({ error: "Görsel üretilemedi. Lütfen tekrar deneyin." }, { status: 500 });
   }
 
   // Guest: return base64 directly without saving
