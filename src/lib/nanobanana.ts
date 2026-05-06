@@ -8,8 +8,8 @@ const MODEL = "gemini-3.1-flash-image-preview";
 async function compressImage(base64: string): Promise<{ data: string; mimeType: string }> {
   const buffer = Buffer.from(base64, "base64");
   const compressed = await sharp(buffer)
-    .resize(512, 512, { fit: "inside", withoutEnlargement: true })
-    .jpeg({ quality: 72 })
+    .resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: 90 })
     .toBuffer();
   return { data: compressed.toString("base64"), mimeType: "image/jpeg" };
 }

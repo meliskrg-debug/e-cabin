@@ -181,7 +181,7 @@ function TryonPageInner() {
                 )}
                 {avatarUrl ? (
                   <div className="rounded-2xl overflow-hidden bg-white/5 w-full">
-                    <Image src={avatarUrl} alt="Avatarım" width={400} height={600} className="w-full h-auto object-contain" />
+                    <Image src={avatarUrl} alt="Avatarım" width={800} height={1200} quality={100} className="w-full h-auto object-contain" />
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-3 py-6 text-white/30">
