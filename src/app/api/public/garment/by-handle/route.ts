@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@supabase/supabase-js";
 
 const TR_MAP: Record<string, string> = {
   "ı": "i", // ı
@@ -32,16 +32,29 @@ function normalizeHandle(handle: string): string {
     .toLowerCase();
 }
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const domain = searchParams.get("domain");
   const handle = searchParams.get("handle");
 
   if (!domain || !handle) {
-    return NextResponse.json({ error: "domain ve handle gerekli" }, { status: 400 });
+    return NextResponse.json({ error: "domain ve handle gerekli" }, { status: 400, headers: CORS_HEADERS });
   }
 
-  const supabase = await createClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   const { data: garments } = await supabase
     .from("brand_garments")
@@ -50,7 +63,7 @@ export async function GET(req: NextRequest) {
     .eq("is_active", true);
 
   if (!garments?.length) {
-    return NextResponse.json({ garment: null });
+    return NextResponse.json({ garment: null }, { headers: CORS_HEADERS });
   }
 
   const normalizedInput = normalizeHandle(handle);
@@ -62,5 +75,5 @@ export async function GET(req: NextRequest) {
     return norm === normalizedInput;
   });
 
-  return NextResponse.json({ garment: garment || null });
+  return NextResponse.json({ garment: garment || null }, { headers: CORS_HEADERS });
 }
