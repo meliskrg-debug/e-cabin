@@ -18,7 +18,7 @@ function EmbedPageInner() {
   const preselectedId = searchParams.get("garment");
 
   const [garments, setGarments] = useState<Garment[]>([]);
-  const [selectedId, setSelectedId] = useState<string>(preselectedId || "");
+  const [selectedId, setSelectedId] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [copiedGlobal, setCopiedGlobal] = useState(false);
   const [shopifyDomain, setShopifyDomain] = useState<string | null>(null);
@@ -27,7 +27,11 @@ function EmbedPageInner() {
     fetch("/api/seller/garments").then(r => r.json()).then(d => {
       const list = d.garments || [];
       setGarments(list);
-      if (!preselectedId && list.length > 0) setSelectedId(list[0].id);
+      if (preselectedId) {
+        setSelectedId(preselectedId);
+      } else if (list.length > 0) {
+        setSelectedId(list[0].id);
+      }
       const withDomain = list.find((g: any) => g.shopify_domain);
       if (withDomain) setShopifyDomain(withDomain.shopify_domain);
     });
