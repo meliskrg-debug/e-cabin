@@ -50,8 +50,10 @@
   // Shopify ürün sayfasında mıyız?
   var pathParts = window.location.pathname.split("/products/");
   if (pathParts.length < 2) return;
-  var handle = pathParts[1].split("?")[0].split("/")[0];
-  if (!handle) return;
+  var rawHandle = pathParts[1].split("?")[0].split("/")[0];
+  if (!rawHandle) return;
+  var handle;
+  try { handle = decodeURIComponent(rawHandle); } catch (e) { handle = rawHandle; }
 
   // Garment'ı bul
   fetch(BASE + "/api/public/garment/by-handle?domain=" + encodeURIComponent(shopDomain) + "&handle=" + encodeURIComponent(handle))
