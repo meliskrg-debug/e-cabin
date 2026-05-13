@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 
 const PUBLIC_PATHS = ["/", "/login", "/signup", "/seller/login", "/seller/register", "/tryon", "/api/public", "/api/tryon", "/widget.js"];
 const SELLER_PATHS = ["/seller/dashboard", "/seller/garments", "/seller/embed"];
@@ -29,12 +29,11 @@ export async function proxy(request: NextRequest) {
 
   // Seller-protected pages: user must have a brand
   if (user && SELLER_PATHS.some(p => pathname.startsWith(p))) {
-    const supabase = createServerClient(
+    const admin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { getAll: () => request.cookies.getAll(), setAll: () => {} } }
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
-    const { data: brand } = await supabase
+    const { data: brand } = await admin
       .from("brands")
       .select("id")
       .eq("owner_user_id", user.id)
@@ -49,12 +48,11 @@ export async function proxy(request: NextRequest) {
 
   // Logged-in with brand on seller login/register → redirect to seller dashboard
   if (user && (pathname === "/seller/login" || pathname === "/seller/register")) {
-    const supabase = createServerClient(
+    const admin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { cookies: { getAll: () => request.cookies.getAll(), setAll: () => {} } }
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
-    const { data: brand } = await supabase
+    const { data: brand } = await admin
       .from("brands")
       .select("id")
       .eq("owner_user_id", user.id)
