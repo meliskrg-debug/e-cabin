@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/seller/login", "/seller/register", "/tryon", "/api/public", "/api/tryon"];
+const PUBLIC_PATHS = ["/", "/login", "/signup", "/seller/login", "/seller/register", "/tryon", "/api/public", "/api/tryon", "/widget.js"];
 const SELLER_PATHS = ["/seller/dashboard", "/seller/garments", "/seller/embed"];
 
 export async function proxy(request: NextRequest) {
@@ -72,6 +72,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|widget\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
