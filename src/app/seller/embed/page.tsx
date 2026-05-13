@@ -37,7 +37,7 @@ function EmbedPageInner() {
     });
   }, [preselectedId]);
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://e-cabin.app";
+  const baseUrl = "https://e-cabin.vercel.app";
   const selectedGarment = garments.find(g => g.id === selectedId);
 
   const linkEmbed = selectedId

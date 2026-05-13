@@ -1,10 +1,8 @@
 (function () {
-  var BASE = "https://e-cabin.app";
-  if (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  ) {
-    BASE = window.location.origin;
+  var scriptEl = document.currentScript || document.querySelector('script[src*="widget.js"]');
+  var BASE = "https://e-cabin.vercel.app";
+  if (scriptEl && scriptEl.src) {
+    try { BASE = new URL(scriptEl.src).origin; } catch (e) {}
   }
 
   function insertButton(garmentId, garmentName) {
