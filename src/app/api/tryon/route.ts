@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateImage } from "@/lib/nanobanana";
 import { TRYON_SYSTEM_PROMPT } from "@/lib/prompts";
 
-export const maxDuration = 60;
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();

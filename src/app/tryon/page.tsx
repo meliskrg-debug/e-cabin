@@ -86,7 +86,15 @@ function TryonPageInner() {
       }
 
       const res = await fetch("/api/tryon", { method: "POST", body: formData });
-      const json = await res.json();
+      if (res.status === 504 || res.status === 503) {
+        setError("İşlem zaman aşımına uğradı, lütfen tekrar deneyin.");
+        return;
+      }
+      let json: any;
+      try { json = await res.json(); } catch {
+        setError(`Sunucu hatası (${res.status}). Lütfen tekrar deneyin.`);
+        return;
+      }
 
       if (!res.ok) {
         setError(json.error || "Bir hata oluştu.");
