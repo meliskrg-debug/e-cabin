@@ -39,37 +39,10 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* 3 Panel */}
-        <div className="w-full max-w-5xl grid grid-cols-3 gap-4 items-stretch">
+        {/* 2 Panel */}
+        <div className="w-full max-w-3xl grid grid-cols-2 gap-4 items-stretch">
 
-          {/* Sol — Avatar */}
-          <div className="animate-fade-in-up bg-white/5 border border-white/10 rounded-3xl overflow-hidden flex flex-col hover:border-lavender-500/40 transition group" style={{ animationDelay: "100ms" }}>
-            <div className="flex-1 relative overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-lavender-400/20 blur-2xl rounded-full z-10" />
-              <div className="absolute top-3 left-3 right-3 z-20">
-                <p className="text-xs text-white/30">Dijital avatarın hazır</p>
-                <h3 className="font-display font-bold text-white text-base">Avatarınla Dene</h3>
-              </div>
-              <video
-                src="https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/assets/hero.mp4.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute bottom-3 left-3 right-3 z-20">
-                <Link
-                  href="/tryon"
-                  className="block text-center py-2.5 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition backdrop-blur-sm"
-                >
-                  Hemen Başla
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Orta — Kabin */}
+          {/* Sol — Kabin */}
           <div className="animate-fade-in-up flex flex-col items-center justify-center text-center gap-6 px-4" style={{ animationDelay: "0ms" }}>
             <div className="relative">
               <div className="absolute inset-0 bg-lavender-500/20 blur-3xl rounded-full" />
