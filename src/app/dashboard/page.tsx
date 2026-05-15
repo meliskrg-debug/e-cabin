@@ -2,13 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import Nav from "@/components/nav";
-import PoseGenerator from "@/components/pose-generator";
-
-const POSE_LABELS: Record<string, string> = {
-  front: "Önden",
-  hands_on_hips_1: "Eli Belinde",
-  hands_on_hips_2: "Doğal Poz",
-};
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -19,11 +12,9 @@ export default async function DashboardPage() {
     .select("*")
     .eq("user_id", user!.id)
     .eq("is_active", true)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false });
 
-  const frontAvatar = avatars?.find(a => a.pose === "front") || avatars?.[0] || null;
-  const poseAvatars = avatars?.filter(a => a.pose && a.pose !== "front") || [];
-  const hasPoses = poseAvatars.length > 0;
+  const activeAvatar = avatars?.[0] || null;
 
   const { count: tryonCount } = await supabase
     .from("tryons").select("*", { count: "exact", head: true }).eq("user_id", user!.id);
@@ -40,64 +31,30 @@ export default async function DashboardPage() {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Avatar Card */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-4">
-            <h2 className="font-display font-bold text-white text-lg">Dijital Avatarın</h2>
-            {frontAvatar ? (
+            <h2 className="font-display font-bold text-white text-lg">Fotoğrafın</h2>
+            {activeAvatar ? (
               <>
-                <div className={`grid gap-3 ${hasPoses ? "grid-cols-3" : "grid-cols-2"}`}>
-                  {/* Front pose */}
-                  <div>
-                    <p className="text-xs text-white/30 text-center mb-1">Önden</p>
-                    <div className="rounded-2xl overflow-hidden bg-white/5">
-                      <Image src={frontAvatar.avatar_url} alt="Avatar önden" width={200} height={300} className="w-full h-auto object-contain" />
-                    </div>
-                  </div>
-
-                  {hasPoses ? (
-                    poseAvatars.slice(0, 2).map(a => (
-                      <div key={a.id}>
-                        <p className="text-xs text-white/30 text-center mb-1">{POSE_LABELS[a.pose] || "Poz"}</p>
-                        <div className="rounded-2xl overflow-hidden bg-white/5">
-                          <Image src={a.avatar_url} alt={a.pose} width={200} height={300} className="w-full h-auto object-contain" />
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div>
-                      <p className="text-xs text-white/30 text-center mb-1">Arkadan</p>
-                      {frontAvatar.avatar_back_url ? (
-                        <div className="rounded-2xl overflow-hidden bg-white/5">
-                          <Image src={frontAvatar.avatar_back_url} alt="Avatar arkadan" width={200} height={300} className="w-full h-auto object-contain" />
-                        </div>
-                      ) : (
-                        <div className="rounded-2xl bg-white/5 border border-dashed border-white/10 flex flex-col items-center justify-center gap-2 text-white/20 aspect-[2/3]">
-                          <span className="text-2xl">🔄</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                <div className="max-w-[200px] mx-auto w-full rounded-2xl overflow-hidden bg-white/5">
+                  <Image src={activeAvatar.avatar_url} alt="Fotoğrafım" width={400} height={600} className="w-full h-auto object-contain" />
                 </div>
-
-                <div className="flex flex-col gap-2">
-                  {!hasPoses && <PoseGenerator />}
-                  <Link
-                    href="/onboarding"
-                    className="text-center py-2.5 text-sm font-medium bg-white/5 border border-white/10 text-white/60 rounded-xl hover:bg-white/10 hover:text-white transition"
-                  >
-                    Avatarı Yenile
-                  </Link>
-                </div>
+                <Link
+                  href="/onboarding"
+                  className="text-center py-2.5 text-sm font-medium bg-white/5 border border-white/10 text-white/60 rounded-xl hover:bg-white/10 hover:text-white transition"
+                >
+                  Fotoğrafı Güncelle
+                </Link>
               </>
             ) : (
               <>
                 <div className="aspect-[3/4] rounded-2xl bg-white/5 border border-dashed border-white/10 flex flex-col items-center justify-center gap-3 text-white/30">
-                  <span className="text-5xl">🧬</span>
-                  <span className="text-sm font-medium">Henüz avatar yok</span>
+                  <span className="text-5xl">📷</span>
+                  <span className="text-sm font-medium">Henüz fotoğraf yok</span>
                 </div>
                 <Link
                   href="/onboarding"
                   className="text-center py-3 font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 text-white rounded-xl hover:from-lavender-400 hover:to-purple-400 transition"
                 >
-                  Avatar Oluştur
+                  Fotoğraf Yükle
                 </Link>
               </>
             )}
