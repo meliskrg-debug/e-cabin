@@ -6,7 +6,7 @@
   }
 
   function removeExisting() {
-    var existing = document.querySelectorAll('[data-ecabin-btn]');
+    var existing = document.querySelectorAll('[data-ecabin-btn], a[href*="/tryon?g="]');
     for (var i = 0; i < existing.length; i++) existing[i].remove();
   }
 
