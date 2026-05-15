@@ -61,16 +61,16 @@ export async function generateImage({
     { text: prompt },
   ];
 
-  // Try up to 3 times — model occasionally returns no image on first attempt
+  // Try up to 2 times — keep total under 60s for Vercel free plan
   let lastError: Error = new Error("Unknown error");
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      console.log(`Gemini attempt ${attempt}/3`);
+      console.log(`Gemini attempt ${attempt}/2`);
       return await callGemini(parts);
     } catch (err) {
       lastError = err as Error;
       console.error(`Gemini attempt ${attempt} failed:`, lastError.message);
-      if (attempt < 3) await new Promise(r => setTimeout(r, 2000 * attempt));
+      if (attempt < 2) await new Promise(r => setTimeout(r, 1000));
     }
   }
 
