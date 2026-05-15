@@ -8,20 +8,12 @@ import ImageUploader from "@/components/image-uploader";
 
 type Photo = { id: string; photo_url: string; label: string | null };
 type WardrobeItem = { id: string; item_url: string; name: string | null };
-type AvatarPose = { id: string; avatar_url: string; pose: string | null };
-
-const POSE_LABELS: Record<string, string> = {
-  front: "Önden",
-  hands_on_hips_1: "Eli Belinde",
-  hands_on_hips_2: "Doğal Poz",
-};
 
 function TryonPageInner() {
   const searchParams = useSearchParams();
   const preloadedGarmentUrl = searchParams.get("garmentUrl");
   const preloadedGarmentId = searchParams.get("g");
 
-  const [sourceType, setSourceType] = useState<"avatar" | "gallery">("avatar");
   const [galleryImage, setGalleryImage] = useState<File | null>(null);
   const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
   const [garment, setGarment] = useState<File | null>(null);
@@ -32,28 +24,12 @@ function TryonPageInner() {
   const [error, setError] = useState("");
   const [savedPhotos, setSavedPhotos] = useState<Photo[]>([]);
   const [photoTab, setPhotoTab] = useState<"saved" | "upload">("saved");
-  const [garmentTab, setGarmentTab] = useState<"wardrobe" | "upload">(
-    preloadedGarmentUrl || preloadedGarmentId ? "wardrobe" : "wardrobe"
-  );
+  const [garmentTab, setGarmentTab] = useState<"wardrobe" | "upload">("wardrobe");
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [allPoses, setAllPoses] = useState<AvatarPose[]>([]);
-  const [selectedPose, setSelectedPose] = useState<string>("front");
-  const [isGuest, setIsGuest] = useState(false);
 
   useEffect(() => {
     fetch("/api/photos").then((r) => r.json()).then((d) => setSavedPhotos(d.photos || [])).catch(() => {});
     fetch("/api/wardrobe").then((r) => r.json()).then((d) => setWardrobeItems(d.items || [])).catch(() => {});
-    fetch("/api/profile").then((r) => {
-      if (r.status === 401) { setIsGuest(true); setSourceType("gallery"); return r.json(); }
-      return r.json().then((d) => {
-        const activeAvatars: AvatarPose[] = d.avatars?.filter((a: any) => a.is_active) || [];
-        setAllPoses(activeAvatars);
-        const front = activeAvatars.find(a => a.pose === "front") || activeAvatars[0];
-        if (front) setAvatarUrl(front.avatar_url);
-      });
-    }).catch(() => { setIsGuest(true); setSourceType("gallery"); });
-    // If brand garment ID provided, fetch its image URL
     if (preloadedGarmentId) {
       fetch(`/api/public/garment/${preloadedGarmentId}`)
         .then(r => r.json())
@@ -73,17 +49,13 @@ function TryonPageInner() {
 
     try {
       const formData = new FormData();
-      formData.append("sourceType", sourceType);
-      const selectedPoseAvatar = allPoses.find(p => (p.pose || "front") === selectedPose);
-      if (selectedPoseAvatar) formData.append("avatarId", selectedPoseAvatar.id);
+      formData.append("sourceType", "gallery");
 
       if (garment) formData.append("garment", garment);
       else if (selectedGarmentUrl) formData.append("garmentUrl", selectedGarmentUrl);
 
-      if (sourceType === "gallery") {
-        if (selectedPhotoUrl) formData.append("galleryImageUrl", selectedPhotoUrl);
-        else if (galleryImage) formData.append("galleryImage", galleryImage);
-      }
+      if (selectedPhotoUrl) formData.append("galleryImageUrl", selectedPhotoUrl);
+      else if (galleryImage) formData.append("galleryImage", galleryImage);
 
       const res = await fetch("/api/tryon", { method: "POST", body: formData });
       if (res.status === 504 || res.status === 503) {
@@ -112,9 +84,8 @@ function TryonPageInner() {
   }
 
   const garmentReady = garment !== null || selectedGarmentUrl !== null;
-  const canSubmit =
-    garmentReady &&
-    (sourceType === "avatar" || selectedPhotoUrl !== null || galleryImage !== null);
+  const photoReady = selectedPhotoUrl !== null || galleryImage !== null;
+  const canSubmit = garmentReady && photoReady;
 
   return (
     <div className="min-h-screen bg-[#0f0a1e] flex flex-col">
@@ -155,82 +126,38 @@ function TryonPageInner() {
         )}
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Source */}
+          {/* Fotoğraf */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5">
-            <h2 className="font-display font-bold text-white text-lg">Kaynak Seç</h2>
-            {!isGuest && (
-              <div className="flex gap-3">
-                {(["avatar", "gallery"] as const).map((t) => (
-                  <button key={t}
-                    onClick={() => { setSourceType(t); setSelectedPhotoUrl(null); setGalleryImage(null); }}
-                    className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition ${
-                      sourceType === t
-                        ? "bg-gradient-to-r from-lavender-500 to-purple-500 text-white"
-                        : "bg-white/5 border border-white/10 text-white/50 hover:text-white hover:bg-white/10"
-                    }`}
-                  >
-                    {t === "avatar" ? "Avatarım" : "Fotoğraf"}
-                  </button>
-                ))}
-              </div>
-            )}
-            {sourceType === "avatar" ? (
-              <div className="flex flex-col gap-3">
-                {allPoses.length > 1 && (
-                  <div className="flex gap-2">
-                    {allPoses.map(p => (
-                      <button key={p.id}
-                        onClick={() => { setSelectedPose(p.pose || "front"); setAvatarUrl(p.avatar_url); }}
-                        className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition ${selectedPose === (p.pose || "front") ? "bg-lavender-500/30 text-lavender-300 border border-lavender-500/40" : "bg-white/5 text-white/40 hover:text-white"}`}>
-                        {POSE_LABELS[p.pose || "front"] || "Poz"}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {avatarUrl ? (
-                  <div className="rounded-2xl overflow-hidden bg-white/5 w-full">
-                    <Image src={avatarUrl} alt="Avatarım" width={800} height={1200} quality={100} className="w-full h-auto object-contain" />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-3 py-6 text-white/30">
-                    <span className="text-4xl">🧬</span>
-                    <span className="text-sm text-white/50">Aktif avatarın kullanılacak</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                <div className="flex gap-2">
-                  <button onClick={() => { setPhotoTab("saved"); setGalleryImage(null); }}
-                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${photoTab === "saved" ? "bg-lavender-500/20 text-lavender-300 border border-lavender-500/30" : "bg-white/5 text-white/40 hover:text-white"}`}>
-                    Kayıtlılardan Seç
-                  </button>
-                  <button onClick={() => { setPhotoTab("upload"); setSelectedPhotoUrl(null); }}
-                    className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${photoTab === "upload" ? "bg-lavender-500/20 text-lavender-300 border border-lavender-500/30" : "bg-white/5 text-white/40 hover:text-white"}`}>
-                    Yeni Yükle
-                  </button>
+            <h2 className="font-display font-bold text-white text-lg">Fotoğrafın</h2>
+            <div className="flex gap-2">
+              <button onClick={() => { setPhotoTab("saved"); setGalleryImage(null); }}
+                className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${photoTab === "saved" ? "bg-lavender-500/20 text-lavender-300 border border-lavender-500/30" : "bg-white/5 text-white/40 hover:text-white"}`}>
+                Kayıtlılardan Seç
+              </button>
+              <button onClick={() => { setPhotoTab("upload"); setSelectedPhotoUrl(null); }}
+                className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${photoTab === "upload" ? "bg-lavender-500/20 text-lavender-300 border border-lavender-500/30" : "bg-white/5 text-white/40 hover:text-white"}`}>
+                Yeni Yükle
+              </button>
+            </div>
+            {photoTab === "saved" ? (
+              savedPhotos.length === 0 ? (
+                <p className="text-xs text-white/30 text-center py-4">Kayıtlı fotoğraf yok. "Yeni Yükle" seçeneğini kullan.</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
+                  {savedPhotos.map((p) => (
+                    <button key={p.id} onClick={() => setSelectedPhotoUrl(p.photo_url)}
+                      className={`rounded-xl overflow-hidden border-2 transition ${selectedPhotoUrl === p.photo_url ? "border-lavender-500" : "border-white/10 hover:border-lavender-500/50"}`}>
+                      <Image src={p.photo_url} alt="" width={120} height={180} className="w-full h-auto object-contain bg-white/5" />
+                    </button>
+                  ))}
                 </div>
-                {photoTab === "saved" ? (
-                  savedPhotos.length === 0 ? (
-                    <p className="text-xs text-white/30 text-center py-4">Kayıtlı fotoğraf yok. "Yeni Yükle" seçeneğini kullan.</p>
-                  ) : (
-                    <div className="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                      {savedPhotos.map((p) => (
-                        <button key={p.id} onClick={() => setSelectedPhotoUrl(p.photo_url)}
-                          className={`rounded-xl overflow-hidden border-2 transition ${selectedPhotoUrl === p.photo_url ? "border-lavender-500" : "border-white/10 hover:border-lavender-500/50"}`}>
-                          <Image src={p.photo_url} alt="" width={120} height={180} className="w-full h-auto object-contain bg-white/5" />
-                        </button>
-                      ))}
-                    </div>
-                  )
-                ) : (
-                  <ImageUploader label="Kişi Fotoğrafı" hint="Kıyafetin üzerine giyileceği fotoğraf" onChange={setGalleryImage} />
-                )}
-              </div>
+              )
+            ) : (
+              <ImageUploader label="Kişi Fotoğrafı" hint="Kıyafetin üzerine giyileceği fotoğraf" onChange={setGalleryImage} />
             )}
           </div>
 
-          {/* Garment */}
+          {/* Kıyafet */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5">
             <h2 className="font-display font-bold text-white text-lg">Kıyafet</h2>
             <div className="flex gap-2">

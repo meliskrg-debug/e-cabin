@@ -20,7 +20,6 @@ export default function Nav() {
         e-cabin
       </Link>
       <div className="flex items-center gap-5">
-        <Link href="/dashboard" className="text-sm font-medium text-white/50 hover:text-white transition">Avatar</Link>
         <Link href="/tryon" className="text-sm font-medium text-white/50 hover:text-white transition">Dene</Link>
         <Link href="/wardrobe" className="text-sm font-medium text-white/50 hover:text-white transition">Dolabım</Link>
         <Link href="/tryon/history" className="text-sm font-medium text-white/50 hover:text-white transition">Geçmiş</Link>
