@@ -1,7 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 import sharp from "sharp";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+  httpOptions: { timeout: 120000 },
+});
 
 const MODEL = "gemini-3.1-flash-image-preview";
 
@@ -61,16 +64,26 @@ export async function generateImage({
     { text: prompt },
   ];
 
-  // Try up to 2 times — keep total under 60s for Vercel free plan
+  const ATTEMPT_TIMEOUT_MS = 125000;
+
+  function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+    return Promise.race([
+      p,
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error(`Gemini attempt timed out after ${ms}ms`)), ms)
+      ),
+    ]);
+  }
+
   let lastError: Error = new Error("Unknown error");
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       console.log(`Gemini attempt ${attempt}/2`);
-      return await callGemini(parts);
+      return await withTimeout(callGemini(parts), ATTEMPT_TIMEOUT_MS);
     } catch (err) {
       lastError = err as Error;
       console.error(`Gemini attempt ${attempt} failed:`, lastError.message);
-      if (attempt < 2) await new Promise(r => setTimeout(r, 1000));
+      if (attempt < 2) await new Promise(r => setTimeout(r, 2000));
     }
   }
 
