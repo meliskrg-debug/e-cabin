@@ -6,7 +6,6 @@ import { useSearchParams } from "next/navigation";
 import Nav from "@/components/nav";
 import ImageUploader from "@/components/image-uploader";
 
-type Photo = { id: string; photo_url: string; label: string | null };
 type WardrobeItem = { id: string; item_url: string; name: string | null };
 
 function TryonPageInner() {
@@ -15,20 +14,16 @@ function TryonPageInner() {
   const preloadedGarmentId = searchParams.get("g");
 
   const [galleryImage, setGalleryImage] = useState<File | null>(null);
-  const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
   const [garment, setGarment] = useState<File | null>(null);
   const [selectedGarmentUrl, setSelectedGarmentUrl] = useState<string | null>(preloadedGarmentUrl);
   const [brandGarmentName, setBrandGarmentName] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [savedPhotos, setSavedPhotos] = useState<Photo[]>([]);
-  const [photoTab, setPhotoTab] = useState<"saved" | "upload">("saved");
   const [garmentTab, setGarmentTab] = useState<"wardrobe" | "upload">("wardrobe");
   const [wardrobeItems, setWardrobeItems] = useState<WardrobeItem[]>([]);
 
   useEffect(() => {
-    fetch("/api/photos").then((r) => r.json()).then((d) => setSavedPhotos(d.photos || [])).catch(() => {});
     fetch("/api/wardrobe").then((r) => r.json()).then((d) => setWardrobeItems(d.items || [])).catch(() => {});
     if (preloadedGarmentId) {
       fetch(`/api/public/garment/${preloadedGarmentId}`)
@@ -54,8 +49,7 @@ function TryonPageInner() {
       if (garment) formData.append("garment", garment);
       else if (selectedGarmentUrl) formData.append("garmentUrl", selectedGarmentUrl);
 
-      if (selectedPhotoUrl) formData.append("galleryImageUrl", selectedPhotoUrl);
-      else if (galleryImage) formData.append("galleryImage", galleryImage);
+      if (galleryImage) formData.append("galleryImage", galleryImage);
 
       const res = await fetch("/api/tryon", { method: "POST", body: formData });
       if (res.status === 504 || res.status === 503) {
@@ -84,7 +78,7 @@ function TryonPageInner() {
   }
 
   const garmentReady = garment !== null || selectedGarmentUrl !== null;
-  const photoReady = selectedPhotoUrl !== null || galleryImage !== null;
+  const photoReady = galleryImage !== null;
   const canSubmit = garmentReady && photoReady;
 
   return (
@@ -129,32 +123,7 @@ function TryonPageInner() {
           {/* Fotoğraf */}
           <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-5">
             <h2 className="font-display font-bold text-white text-lg">Fotoğrafın</h2>
-            <div className="flex gap-2">
-              <button onClick={() => { setPhotoTab("saved"); setGalleryImage(null); }}
-                className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${photoTab === "saved" ? "bg-lavender-500/20 text-lavender-300 border border-lavender-500/30" : "bg-white/5 text-white/40 hover:text-white"}`}>
-                Kayıtlılardan Seç
-              </button>
-              <button onClick={() => { setPhotoTab("upload"); setSelectedPhotoUrl(null); }}
-                className={`flex-1 py-2 text-xs font-semibold rounded-lg transition ${photoTab === "upload" ? "bg-lavender-500/20 text-lavender-300 border border-lavender-500/30" : "bg-white/5 text-white/40 hover:text-white"}`}>
-                Yeni Yükle
-              </button>
-            </div>
-            {photoTab === "saved" ? (
-              savedPhotos.length === 0 ? (
-                <p className="text-xs text-white/30 text-center py-4">Kayıtlı fotoğraf yok. "Yeni Yükle" seçeneğini kullan.</p>
-              ) : (
-                <div className="grid grid-cols-3 gap-2 max-h-60 overflow-y-auto">
-                  {savedPhotos.map((p) => (
-                    <button key={p.id} onClick={() => setSelectedPhotoUrl(p.photo_url)}
-                      className={`rounded-xl overflow-hidden border-2 transition ${selectedPhotoUrl === p.photo_url ? "border-lavender-500" : "border-white/10 hover:border-lavender-500/50"}`}>
-                      <Image src={p.photo_url} alt="" width={120} height={180} className="w-full h-auto object-contain bg-white/5" />
-                    </button>
-                  ))}
-                </div>
-              )
-            ) : (
-              <ImageUploader label="Kişi Fotoğrafı" hint="Kıyafetin üzerine giyileceği fotoğraf" onChange={setGalleryImage} />
-            )}
+            <ImageUploader label="Kişi Fotoğrafı" hint="Kıyafetin üzerine giyileceği fotoğraf" onChange={setGalleryImage} />
           </div>
 
           {/* Kıyafet */}
