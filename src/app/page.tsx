@@ -8,12 +8,6 @@ export default function LandingPage() {
         <span className="font-display font-bold text-white text-xl tracking-tight">e-cabin</span>
         <div className="flex items-center gap-3">
           <Link
-            href="/seller/login"
-            className="px-4 py-2 text-sm font-semibold text-white/60 hover:text-white transition"
-          >
-            Giriş Yap
-          </Link>
-          <Link
             href="/seller/register"
             className="px-5 py-2 text-sm font-semibold bg-gradient-to-r from-lavender-500 to-purple-500 hover:from-lavender-400 hover:to-purple-400 text-white rounded-xl transition"
           >
@@ -72,13 +66,13 @@ export default function LandingPage() {
                 num: "01",
                 icon: "📦",
                 title: "Ürünlerini ekle",
-                desc: "Shopify mağazanı bağla veya ürün görsellerini yükle. 5 dakika sürer.",
+                desc: "Marka paneline üye ol, ürün görsellerini yükle. 5 dakika sürer.",
               },
               {
                 num: "02",
                 icon: "⚡",
-                title: "Kodu yapıştır",
-                desc: "Sana özel 1 satır script kodunu Shopify temanıza ekle. Geliştirici gerekmez.",
+                title: "Kodu kopyala",
+                desc: "Sana özel embed kodunu kopyala, ürün sayfana yapıştır. Shopify, WordPress, özel site — fark etmez.",
               },
               {
                 num: "03",
@@ -125,7 +119,7 @@ export default function LandingPage() {
               {
                 icon: "🔧",
                 title: "Kurulum 5 dakika",
-                desc: "Shopify uyumlu, 1 satır kod. Teknik bilgi gerekmez, geliştirici tutmana gerek yok.",
+                desc: "Shopify, WordPress, özel site — herhangi bir platforma çalışır. 1 satır kod, geliştirici gerekmez.",
               },
               {
                 icon: "👗",
