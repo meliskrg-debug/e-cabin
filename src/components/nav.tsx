@@ -21,8 +21,6 @@ export default function Nav() {
       </Link>
       <div className="flex items-center gap-5">
         <Link href="/tryon" className="text-sm font-medium text-white/50 hover:text-white transition">Dene</Link>
-        <Link href="/wardrobe" className="text-sm font-medium text-white/50 hover:text-white transition">Dolabım</Link>
-        <Link href="/tryon/history" className="text-sm font-medium text-white/50 hover:text-white transition">Geçmiş</Link>
         <Link href="/profile" className="text-sm font-medium text-white/50 hover:text-white transition">Profil</Link>
         <button
           onClick={handleSignOut}
