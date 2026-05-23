@@ -4,12 +4,6 @@ import { useState, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 
-const SAMPLE_PHOTOS = [
-  "https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/assets/sample1.jpg",
-  "https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/assets/sample2.jpg",
-  "https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/assets/sample3.jpg",
-  "https://edvjerpjsivradrragij.supabase.co/storage/v1/object/public/assets/sample4.jpg",
-];
 
 function EmbedInner() {
   const searchParams = useSearchParams();
@@ -18,7 +12,6 @@ function EmbedInner() {
   const [step, setStep] = useState<"upload" | "loading" | "result">("upload");
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [selectedSample, setSelectedSample] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [error, setError] = useState("");
 
@@ -26,7 +19,6 @@ function EmbedInner() {
     const file = e.target.files?.[0];
     if (!file) return;
     setPhoto(file);
-    setSelectedSample(null);
     setPhotoPreview(URL.createObjectURL(file));
   }
 
@@ -35,13 +27,12 @@ function EmbedInner() {
     const file = e.dataTransfer.files?.[0];
     if (!file || !file.type.startsWith("image/")) return;
     setPhoto(file);
-    setSelectedSample(null);
     setPhotoPreview(URL.createObjectURL(file));
   }
 
   async function handleSubmit() {
     if (!garmentId) { setError("Ürün bulunamadı."); return; }
-    if (!photo && !selectedSample) { setError("Fotoğraf seç."); return; }
+    if (!photo) { setError("Fotoğraf seç."); return; }
 
     setError("");
     setStep("loading");
@@ -49,19 +40,12 @@ function EmbedInner() {
     try {
       const formData = new FormData();
       formData.append("sourceType", "gallery");
-      formData.append("garmentUrl", `/api/public/garment/${garmentId}`);
 
-      // get garment url
       const gRes = await fetch(`/api/public/garment/${garmentId}`);
       const gData = await gRes.json();
       if (!gData.garment?.image_url) { setError("Ürün görseli alınamadı."); setStep("upload"); return; }
-      formData.set("garmentUrl", gData.garment.image_url);
-
-      if (photo) {
-        formData.append("galleryImage", photo);
-      } else if (selectedSample) {
-        formData.append("galleryImageUrl", selectedSample);
-      }
+      formData.append("garmentUrl", gData.garment.image_url);
+      formData.append("galleryImage", photo);
 
       const res = await fetch("/api/tryon", { method: "POST", body: formData });
       const json = await res.json();
@@ -80,7 +64,7 @@ function EmbedInner() {
     }
   }
 
-  const hasPhoto = photo !== null || selectedSample !== null;
+  const hasPhoto = photo !== null;
 
   if (step === "loading") {
     return (
@@ -100,7 +84,7 @@ function EmbedInner() {
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <span className="font-semibold text-gray-800 text-sm">e-cabin ile dene</span>
           <button
-            onClick={() => { setStep("upload"); setResultUrl(null); setPhoto(null); setPhotoPreview(null); setSelectedSample(null); }}
+            onClick={() => { setStep("upload"); setResultUrl(null); setPhoto(null); setPhotoPreview(null); }}
             className="text-sm text-purple-600 font-medium hover:text-purple-800 transition"
           >
             Tekrar Dene
@@ -156,22 +140,6 @@ function EmbedInner() {
             </div>
           )}
         </label>
-
-        {/* Sample photos */}
-        <div>
-          <p className="text-xs font-medium text-gray-500 mb-2">Örnek fotoğraflar</p>
-          <div className="grid grid-cols-4 gap-2">
-            {SAMPLE_PHOTOS.map((url, i) => (
-              <button
-                key={i}
-                onClick={() => { setSelectedSample(url); setPhoto(null); setPhotoPreview(null); }}
-                className={`rounded-xl overflow-hidden border-2 transition aspect-[3/4] relative ${selectedSample === url ? "border-purple-500" : "border-gray-200 hover:border-purple-300"}`}
-              >
-                <Image src={url} alt={`Örnek ${i + 1}`} fill className="object-cover" onError={() => {}} />
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Tips */}
         <div className="flex flex-col gap-2">
