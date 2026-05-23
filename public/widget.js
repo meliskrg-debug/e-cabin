@@ -1,4 +1,7 @@
 (function () {
+  if (window.__ecabinLoaded) return;
+  window.__ecabinLoaded = true;
+
   var scriptEl = document.currentScript || document.querySelector('script[src*="widget.js"]');
   var BASE = "https://e-cabin.vercel.app";
   if (scriptEl && scriptEl.src) {
@@ -118,6 +121,6 @@
   }
 
   run();
-  document.addEventListener("page:transition:end", run);
+  document.addEventListener("page:transition:end", function () { window.__ecabinLoaded = false; run(); window.__ecabinLoaded = true; });
   document.addEventListener("shopify:section:load", run);
 })();
