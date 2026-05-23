@@ -55,7 +55,7 @@
   }
 
   function removeExisting() {
-    var existing = document.querySelectorAll('[data-ecabin-btn]');
+    var existing = document.querySelectorAll('[data-ecabin-btn], a[href*="e-cabin"], a[href*="ecabin"]');
     for (var i = 0; i < existing.length; i++) existing[i].remove();
   }
 
