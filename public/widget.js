@@ -58,8 +58,15 @@
   }
 
   function removeExisting() {
-    var existing = document.querySelectorAll('[data-ecabin-btn], a[href*="e-cabin"], a[href*="ecabin"]');
+    var existing = document.querySelectorAll('[data-ecabin-btn], a[href*="e-cabin"], a[href*="ecabin"], button[href*="e-cabin"]');
     for (var i = 0; i < existing.length; i++) existing[i].remove();
+    // Also catch any element whose text contains "e-cabin ile dene" (static embeds)
+    var all = document.querySelectorAll('a, button');
+    for (var i = 0; i < all.length; i++) {
+      if (!all[i].getAttribute('data-ecabin-btn') && all[i].textContent.trim().indexOf('e-cabin ile dene') !== -1) {
+        all[i].remove();
+      }
+    }
   }
 
   function insertButton(garmentId) {
