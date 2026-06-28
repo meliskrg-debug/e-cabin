@@ -11,6 +11,19 @@ export default function SellerLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+
+  async function handleForgotPassword() {
+    if (!email) { setError("Önce e-posta adresini gir."); return; }
+    setError("");
+    setLoading(true);
+    const supabase = createClient();
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/seller/reset-password`,
+    });
+    setLoading(false);
+    setResetSent(true);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -70,6 +83,11 @@ export default function SellerLoginPage() {
             {error && (
               <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
             )}
+            {resetSent && (
+              <p className="text-sm text-green-400 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
+                Şifre sıfırlama maili gönderildi. E-postanı kontrol et.
+              </p>
+            )}
 
             <button
               type="submit"
@@ -77,6 +95,14 @@ export default function SellerLoginPage() {
               className="bg-gradient-to-r from-lavender-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:from-lavender-400 hover:to-purple-400 transition disabled:opacity-60"
             >
               {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
+            </button>
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={loading}
+              className="text-sm text-white/40 hover:text-white/70 transition text-center"
+            >
+              Şifremi unuttum
             </button>
           </form>
         </div>
