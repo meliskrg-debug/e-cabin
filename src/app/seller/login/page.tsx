@@ -24,7 +24,7 @@ export default function SellerLoginPage() {
     });
     setLoading(false);
     if (error) {
-      setError("Kod gönderilemedi. E-postayı kontrol et.");
+      setError("Kod gönderilemedi: " + error.message);
     } else {
       setStep("code");
     }
