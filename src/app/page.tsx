@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function LandingPage() {
   return (
@@ -62,12 +63,8 @@ export default function LandingPage() {
             {/* Upload area */}
             <div className="p-3 flex flex-col gap-2">
               <p className="text-[9px] font-semibold text-gray-700">1. Fotoğrafını yükle</p>
-              <div className="border-2 border-dashed border-purple-200 rounded-xl p-4 flex flex-col items-center gap-1.5 bg-purple-50/50">
-                <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                </svg>
-                <span className="text-[8px] text-center text-gray-500 font-medium">Fotoğraf seç<br />veya sürükle</span>
-                <span className="text-[7px] text-gray-400">JPG, PNG • Max 10MB</span>
+              <div className="rounded-xl overflow-hidden border border-purple-100">
+                <Image src="/demo-before.jpg" alt="Örnek fotoğraf" width={200} height={280} className="w-full h-auto object-cover" />
               </div>
               {["İyi aydınlatılmış fotoğraf", "Vücudun tamamı görünsün", "Düz arka plan"].map(tip => (
                 <div key={tip} className="flex items-center gap-1">
@@ -110,14 +107,10 @@ export default function LandingPage() {
                 </div>
                 <span className="text-[9px] font-bold text-gray-800">Deneme sonucu</span>
               </div>
-              {/* Fake result image */}
-              <div className="rounded-xl overflow-hidden bg-gradient-to-b from-purple-50 to-purple-100 aspect-[3/4] flex items-end justify-center relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="w-10 h-10 text-purple-200" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
-                  </svg>
-                </div>
-                <div className="relative z-10 w-full p-2">
+              {/* Result image */}
+              <div className="rounded-xl overflow-hidden relative">
+                <Image src="/demo-after.png" alt="Deneme sonucu" width={200} height={280} className="w-full h-auto object-cover" />
+                <div className="absolute bottom-0 left-0 right-0 p-2">
                   <div className="bg-purple-600/90 backdrop-blur-sm rounded-lg px-2 py-1">
                     <p className="text-[7px] text-white font-bold">Harika! Çok iyi duruyor.</p>
                     <p className="text-[6px] text-purple-200">38 size önerilir</p>
