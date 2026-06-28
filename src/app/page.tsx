@@ -12,6 +12,9 @@ export default function LandingPage() {
           <span className="text-[9px] tracking-[0.3em] text-purple-400 font-medium">— SANAL DENEME KABİNİ —</span>
         </div>
         <div className="flex items-center gap-3">
+          <a href="#fiyatlandirma" className="px-4 py-2 text-sm font-semibold text-purple-700 hover:text-purple-900 transition hidden sm:block">
+            Fiyatlar
+          </a>
           <Link href="/seller/login" className="px-4 py-2 text-sm font-semibold text-purple-700 hover:text-purple-900 transition">
             Marka Girişi
           </Link>
@@ -242,6 +245,191 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Fiyatlandırma */}
+      <section id="fiyatlandirma" className="py-20 px-6 bg-[#0d0620]">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-purple-400 text-xs font-bold uppercase tracking-widest mb-2">Fiyatlandırma</p>
+            <h2 className="font-display font-black text-2xl md:text-4xl text-white mb-3">
+              Markanızın e-ticaret deneyimini<br />bir üst seviyeye taşıyın
+            </h2>
+            <p className="text-purple-300 text-sm max-w-xl mx-auto">
+              Yapay zekâ destekli sanal deneme teknolojisi ile iade oranlarınızı düşürün, dönüşümünüzü artırın.
+            </p>
+          </div>
+
+          {/* 4 Kart Grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {/* Starter */}
+            <div className="bg-white rounded-3xl p-6 flex flex-col gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black text-sm tracking-widest text-purple-700 mb-1">STARTER</p>
+                <p className="text-gray-400 text-xs leading-relaxed">Küçük butik ve yeni e-ticaret markaları için.</p>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-black text-3xl text-gray-900">4.990</span>
+                <span className="text-sm text-gray-500">TL / Ay</span>
+              </div>
+              <ul className="flex flex-col gap-2 flex-1">
+                {["1 Web Sitesi","250 Ürüne Kadar","1.500 AI Denemesi / Ay","E Cabin Entegrasyonu","Temel Analitik Paneli","E-posta Desteği"].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-600">
+                    <svg className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/seller/register" className="w-full py-3 text-center text-sm font-bold bg-[#4A1FA8] text-white rounded-2xl hover:bg-purple-900 transition">
+                Hemen Başlayın
+              </Link>
+            </div>
+
+            {/* Professional — öne çıkan */}
+            <div className="bg-white rounded-3xl p-6 flex flex-col gap-4 ring-2 ring-blue-500 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[10px] font-black px-4 py-1 rounded-full tracking-wider whitespace-nowrap">
+                EN ÇOK TERCİH EDİLEN
+              </div>
+              <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black text-sm tracking-widest text-blue-600 mb-1">PROFESSIONAL</p>
+                <p className="text-gray-400 text-xs leading-relaxed">Büyüyen markalar için.</p>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-black text-3xl text-gray-900">9.990</span>
+                <span className="text-sm text-gray-500">TL / Ay</span>
+              </div>
+              <ul className="flex flex-col gap-2 flex-1">
+                {["1 Web Sitesi","1.000 Ürüne Kadar","7.500 AI Denemesi / Ay","Gelişmiş Analitik","Dönüşüm Takibi","Öncelikli Destek","Yeni Özelliklere Erken Erişim"].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-600">
+                    <svg className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/seller/register" className="w-full py-3 text-center text-sm font-bold bg-blue-600 text-white rounded-2xl hover:bg-blue-700 transition">
+                Hemen Başlayın
+              </Link>
+            </div>
+
+            {/* Premium */}
+            <div className="bg-white rounded-3xl p-6 flex flex-col gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+                <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 3l14 9-14 9V3z" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black text-sm tracking-widest text-orange-500 mb-1">PREMIUM</p>
+                <p className="text-gray-400 text-xs leading-relaxed">Yoğun trafiğe sahip moda markaları için.</p>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-black text-3xl text-gray-900">19.990</span>
+                <span className="text-sm text-gray-500">TL / Ay</span>
+              </div>
+              <ul className="flex flex-col gap-2 flex-1">
+                {["Sınırsız Ürün","25.000 AI Denemesi / Ay","API Entegrasyonu","Gelişmiş Analitik","Özel Hesap Yöneticisi","Öncelikli Teknik Destek"].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-600">
+                    <svg className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/seller/register" className="w-full py-3 text-center text-sm font-bold bg-orange-500 text-white rounded-2xl hover:bg-orange-600 transition">
+                Hemen Başlayın
+              </Link>
+            </div>
+
+            {/* Enterprise */}
+            <div className="bg-gray-900 rounded-3xl p-6 flex flex-col gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center">
+                <svg className="w-5 h-5 text-purple-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-black text-sm tracking-widest text-purple-300 mb-1">ENTERPRISE</p>
+                <p className="text-gray-400 text-xs leading-relaxed">Kurumsal markalar için özel çözümler.</p>
+              </div>
+              <div className="flex items-baseline gap-1">
+                <span className="font-black text-2xl text-purple-400">Teklif Al</span>
+              </div>
+              <ul className="flex flex-col gap-2 flex-1">
+                {["Çoklu Web Sitesi","Sınırsız Ürün","Özel AI Limitleri","Özel Sunucu Seçenekleri","SLA","Beyaz Etiket (White Label)","Özel Geliştirmeler"].map(f => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-gray-300">
+                    <svg className="w-3.5 h-3.5 text-purple-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/seller/register" className="w-full py-3 text-center text-sm font-bold border border-purple-500 text-purple-300 hover:bg-purple-500/10 rounded-2xl transition">
+                İletişime Geçin
+              </Link>
+            </div>
+          </div>
+
+          {/* Alt Bölümler */}
+          <div className="grid md:grid-cols-2 gap-4">
+            {/* Ek Kullanım */}
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 flex items-center gap-5">
+              <div className="w-12 h-12 rounded-2xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                <svg className="w-6 h-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="font-black text-white text-sm mb-0.5">EK KULLANIM</p>
+                <p className="text-purple-300 text-xs">AI deneme limitiniz dolarsa ihtiyaç kadar ek kullanım satın alabilirsiniz.</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-purple-300 text-xs">+ 1.000</p>
+                <p className="text-[10px] text-purple-400">AI Denemesi</p>
+                <p className="font-black text-white text-lg">990 TL</p>
+              </div>
+            </div>
+
+            {/* Kurucu Marka Programı */}
+            <div className="bg-gradient-to-br from-purple-900/80 to-[#4A1FA8]/60 border border-purple-500/30 rounded-3xl p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <span className="text-2xl">⭐</span>
+                <div>
+                  <p className="font-black text-white text-sm">KURUCU MARKA PROGRAMI</p>
+                  <p className="text-purple-300 text-xs">İlk 20 marka için özel avantajlar!</p>
+                </div>
+                <div className="ml-auto text-right flex-shrink-0">
+                  <p className="font-black text-purple-300 text-xl">2.990 TL</p>
+                  <p className="text-purple-400 text-[10px]">/ Ay</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { icon: "🔒", text: "Ömür Boyu Bu Fiyat Garantisi" },
+                  { icon: "🚀", text: "Tüm Güncellemeler" },
+                  { icon: "💬", text: "Öncelikli Destek" },
+                  { icon: "🤝", text: "Referans Marka Olma Avantajı" },
+                ].map(item => (
+                  <div key={item.text} className="flex items-center gap-2">
+                    <span className="text-sm">{item.icon}</span>
+                    <span className="text-xs text-purple-200">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <p className="text-center text-purple-500 text-xs mt-6">
+            Tüm fiyatlar KDV hariçtir. Paket içerikleri değişiklik gösterebilir. Detaylı bilgi için bizimle iletişime geçin.
+          </p>
         </div>
       </section>
 
