@@ -1,42 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SellerLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resetSent, setResetSent] = useState(false);
-
-  async function handleForgotPassword() {
-    if (!email) { setError("Önce e-posta adresini gir."); return; }
-    setError("");
-    setLoading(true);
-    const supabase = createClient();
-    await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/seller/reset-password`,
-    });
-    setLoading(false);
-    setResetSent(true);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/seller/dashboard` },
+    });
     setLoading(false);
     if (error) {
-      setError("E-posta veya şifre hatalı.");
+      setError("Bir hata oluştu. Tekrar dene.");
     } else {
-      router.push("/seller/dashboard");
-      router.refresh();
+      setSent(true);
     }
   }
 
@@ -51,60 +38,52 @@ export default function SellerLoginPage() {
             Marka Paneli
           </div>
           <h1 className="text-2xl font-bold text-white font-display">Hoş geldin</h1>
-          <p className="text-white/40 mt-1 text-sm">Marka hesabınla giriş yap</p>
+          <p className="text-white/40 mt-1 text-sm">E-postana giriş linki gönderelim</p>
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-3xl p-8">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-white/60">E-posta</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="marka@email.com"
-                className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-lavender-500/50 focus:border-lavender-500/50 transition"
-              />
+          {sent ? (
+            <div className="text-center flex flex-col gap-4">
+              <div className="w-14 h-14 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-2xl mx-auto">
+                ✉️
+              </div>
+              <div>
+                <p className="text-white font-semibold">Mail gönderildi!</p>
+                <p className="text-white/40 text-sm mt-1">
+                  <span className="text-lavender-400">{email}</span> adresine giriş linki gönderdik. Linke tıkla, panele gir.
+                </p>
+              </div>
+              <button onClick={() => setSent(false)} className="text-xs text-white/30 hover:text-white/50 transition">
+                Farklı e-posta dene
+              </button>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/60">E-posta</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="marka@email.com"
+                  className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-lavender-500/50 focus:border-lavender-500/50 transition"
+                />
+              </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-white/60">Şifre</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="••••••••"
-                className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 outline-none focus:ring-2 focus:ring-lavender-500/50 focus:border-lavender-500/50 transition"
-              />
-            </div>
+              {error && (
+                <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
+              )}
 
-            {error && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">{error}</p>
-            )}
-            {resetSent && (
-              <p className="text-sm text-green-400 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3">
-                Şifre sıfırlama maili gönderildi. E-postanı kontrol et.
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-gradient-to-r from-lavender-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:from-lavender-400 hover:to-purple-400 transition disabled:opacity-60"
-            >
-              {loading ? "Giriş yapılıyor..." : "Giriş Yap"}
-            </button>
-            <button
-              type="button"
-              onClick={handleForgotPassword}
-              disabled={loading}
-              className="text-sm text-white/40 hover:text-white/70 transition text-center"
-            >
-              Şifremi unuttum
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-gradient-to-r from-lavender-500 to-purple-500 text-white font-semibold py-3 rounded-xl hover:from-lavender-400 hover:to-purple-400 transition disabled:opacity-60"
+              >
+                {loading ? "Gönderiliyor..." : "Giriş Linki Gönder ✉️"}
+              </button>
+            </form>
+          )}
         </div>
 
         <p className="text-center text-sm text-white/40 mt-6">
@@ -112,10 +91,6 @@ export default function SellerLoginPage() {
           <Link href="/seller/register" className="font-semibold text-lavender-400 hover:text-lavender-300">
             Marka olarak kaydol
           </Link>
-        </p>
-        <p className="text-center text-xs text-white/20 mt-3">
-          Müşteri olarak mı kullanmak istiyorsun?{" "}
-          <Link href="/login" className="text-white/40 hover:text-white/60">Kullanıcı girişi →</Link>
         </p>
       </div>
     </div>
