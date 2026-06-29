@@ -134,6 +134,115 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Canlı Site Görünümü */}
+      <section className="py-20 px-6 bg-purple-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-purple-500 text-xs font-bold uppercase tracking-widest mb-2">Gerçek Entegrasyon</p>
+            <h2 className="font-display font-black text-2xl md:text-3xl text-gray-900">
+              Müşteri sayfadan çıkmadan, saniyeler içinde dener
+            </h2>
+          </div>
+
+          {/* Browser Mockup */}
+          <div className="rounded-2xl overflow-hidden shadow-2xl shadow-purple-200 border border-purple-100 max-w-4xl mx-auto">
+            {/* Browser chrome */}
+            <div className="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                <div className="w-3 h-3 rounded-full bg-green-400" />
+              </div>
+              <div className="flex-1 bg-white rounded-md px-3 py-1.5 text-xs text-gray-400 font-mono border border-gray-200">
+                biancoenero.com.tr/products/rosalinda-dress
+              </div>
+            </div>
+
+            {/* Page content */}
+            <div className="bg-white flex min-h-[420px]">
+              {/* Sol — e-cabin widget paneli */}
+              <div className="w-[260px] flex-shrink-0 border-r border-gray-100 flex flex-col">
+                {/* Widget header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                  <span className="text-sm font-bold text-gray-800">e-cabin ile dene</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-semibold text-purple-500">Tekrar Dene</span>
+                    <span className="text-gray-400 text-base cursor-pointer">✕</span>
+                  </div>
+                </div>
+                {/* Result image */}
+                <div className="flex-1 relative">
+                  <Image
+                    src="/demo-before.jpg"
+                    alt="Deneme sonucu"
+                    fill
+                    className="object-cover object-top"
+                  />
+                </div>
+                {/* İndir butonu */}
+                <div className="px-4 py-3 border-t border-gray-100">
+                  <button className="w-full py-2.5 text-sm font-semibold border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition">
+                    İndir
+                  </button>
+                </div>
+              </div>
+
+              {/* Sağ — Ürün sayfası */}
+              <div className="flex-1 flex">
+                {/* Ürün görseli */}
+                <div className="w-[45%] relative bg-gray-50">
+                  <Image
+                    src="/demo-after.png"
+                    alt="Rosalinda Dress"
+                    fill
+                    className="object-cover object-top"
+                  />
+                </div>
+
+                {/* Ürün detayları */}
+                <div className="flex-1 p-6 flex flex-col gap-4">
+                  <h3 className="font-bold text-xl text-gray-900">Rosalinda Dress</h3>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-bold text-lg text-gray-900">6.500,00TL</span>
+                    <span className="text-sm text-gray-400 line-through">8.500,00TL</span>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Beden</p>
+                    <div className="flex gap-2">
+                      {["36","38","40"].map(s => (
+                        <button key={s} className={`w-10 h-10 rounded-lg border text-sm font-semibold transition ${s === "36" ? "border-gray-900 bg-gray-900 text-white" : "border-gray-200 text-gray-700 hover:border-gray-400"}`}>{s}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Adet</p>
+                    <div className="flex items-center gap-3 border border-gray-200 rounded-xl w-fit px-4 py-2">
+                      <button className="text-gray-400 font-bold">−</button>
+                      <span className="text-sm font-semibold w-4 text-center">1</span>
+                      <button className="text-gray-400 font-bold">+</button>
+                    </div>
+                  </div>
+
+                  <button className="w-full py-3 bg-gray-900 text-white text-sm font-bold rounded-xl mt-1">
+                    Sepete ekle
+                  </button>
+
+                  <button className="w-full py-3 bg-[#7C3AED] text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M8 2l-4 4 3 1v13a1 1 0 001 1h8a1 1 0 001-1V7l3-1-4-4"/>
+                      <path d="M8 2c0 2 1.5 3 4 3s4-1 4-3"/>
+                    </svg>
+                    e-cabin ile dene
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Demo bant */}
       <section className="bg-[#4A1FA8] py-16 px-6">
         <div className="max-w-5xl mx-auto text-center">
