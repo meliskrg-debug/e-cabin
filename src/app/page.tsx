@@ -173,7 +173,7 @@ export default function LandingPage() {
                 {/* Result image */}
                 <div className="flex-1 relative">
                   <Image
-                    src="/demo-before.jpg"
+                    src="/demo-after.png"
                     alt="Deneme sonucu"
                     fill
                     className="object-cover object-top"
@@ -192,7 +192,7 @@ export default function LandingPage() {
                 {/* Ürün görseli */}
                 <div className="w-[45%] relative bg-gray-50">
                   <Image
-                    src="/demo-after.png"
+                    src="/rosalinda-model.jpg"
                     alt="Rosalinda Dress"
                     fill
                     className="object-cover object-top"
